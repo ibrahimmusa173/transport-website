@@ -1,14 +1,14 @@
 
-import Mobile from './Mobile'
+// import Mobile from './Mobile'
 import Desktop from './Desktop'
-import WhatsApp from './Whatsapp'
+// import WhatsApp from './Whatsapp'
 
 function Navbar() {
   return (
     <>
-      <Mobile />
+      {/* <Mobile /> */}
       <Desktop />
-      <WhatsApp />
+      {/* <WhatsApp /> */}
     </>
   )
 }
