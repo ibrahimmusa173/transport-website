@@ -5,14 +5,17 @@ function Footer() {
         <div className=" mt-16 w-[100%]">
 
 
+                                                         {/* Logo & Tagline Section */}
 
             <div className=" flex flex-col justify-center items-center container mx-auto md:flex md:flex-row md:justify-between md:px-4">
-                <div ><img className="h-20 w-60" src="img/dynamicLeo.png" alt="" /></div>
+                <div ><img className="h-20 w-60" src="images/Logo/dynamicLeo.png" alt="" /></div>
                 <div className=" mt-4 "><p className="text-sky-700 text-2xl font-semibold md:text-4xl font-bold">MAKE THE LEAP</p></div>
             </div>
 
 
 
+
+                                                            {/* Quick Links */}
 
             <div className="   grid sm:grid-cols-2 md:grid-cols-3">
 
@@ -43,11 +46,17 @@ function Footer() {
 
 
 
-            <div className="border border-zinc-200 w-[90%] ml-16 pl-4 mt-12  "></div>
+
+
+                                                            {/* Straight Line */}
+                            <div className="border border-zinc-200 w-[90%] ml-16 pl-4 mt-12  "></div>
 
 
 
 
+
+
+                                                          {/* Footer bottom */}
             <div className="flex flex-col justify-center items-center md:flex-row md:justify-between mx-8 px-8">
 
                 <div className=" flex h-16 items-center ">
@@ -58,10 +67,9 @@ function Footer() {
 
                 <div className="text-xs text-gray-600">
                     <p>© 2025 Dynamic Leo. ALL RIGHTS RESERVED</p>
-                </div>
+                </div>    </div>
 
 
-            </div>
 
 
 
