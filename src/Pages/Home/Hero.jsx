@@ -20,7 +20,7 @@ function Hero() {
           <source src="/images/Video/transportVideo.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-
+        
         <div className="absolute inset-0 w-full h-full flex items-center justify-left pl-8 sm:pl-20">
           <div data-aos="fade-up" className="w-[40%] sm:w-[280] md:w-[390px] flex flex-col text-white">
             <p className="sm:font-semibold md:font-bold font-normal md:text-4xl sm:text-2xl text-xl">Logistics, Simplified.</p>

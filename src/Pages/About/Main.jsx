@@ -5,6 +5,7 @@ function Main() {
 
 
             {/* Main Section */}
+            <div className="py-4">
             <div className="   bg-slate-50  px-8 grid md:grid-cols-2 gap-4 ">
                 <div data-aos="fade-up" className="  mt-8 ">
                     <div> <p className="text-2xl font-bold text-yellow-600">About DLT</p> </div>
@@ -14,7 +15,7 @@ function Main() {
                         </p>
                     </div> </div>
                 <div data-aos="fade-up" className="   pt-4 rounded-md px-4 h-[270px] "><img className="w-full h-full bg-black opacity-  object-cover rounded-md  hover:scale-[1.05] duration-300" src="images/About us/about.png" alt="" /></div>
-            </div>
+            </div></div>
 
 
 

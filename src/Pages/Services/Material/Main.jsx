@@ -3,7 +3,7 @@ function Main() {
     return (
         <>
                                                  {/* Paragraph */}
-            <div className="flex items-center justify-center text-indigo-800 mx-8 my-12 font-medium text-sm">
+            <div className="flex items-center justify-center text-indigo-900 mx-8 my-12 font-medium ">
                 <p className=" text-center">We supply a wide range of construction materials for residential and commercial construction jobs, we are the leading supplier of construction materials like washed sand,
                     Aggregates of different types, varieties of bases, Sweet Sand, different sizes of boulders and Natural Rocks.</p>
             </div>
@@ -21,7 +21,7 @@ function Main() {
 
 
                                                         {/* 1st Column */}
-                <div className="   p-4 mt-8 bg-stone-200 shadow-xl shadow-sky-100">
+                <div className="   p-4 mt-4 bg-stone-200 shadow-xl shadow-sky-100">
                     <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
 
                     <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/agg1.jpg" alt="" /></div>
@@ -57,7 +57,7 @@ function Main() {
 
 
                                                         {/* 2nd Column */}
-                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100  mt-8">
+                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100  mt-4">
                     <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
 
                     <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/Boult.jpg" alt="" /></div>
@@ -93,7 +93,7 @@ function Main() {
 
                                                        
                                                           {/* 3rd Column */}
-                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100 mt-8">
+                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100 mt-4">
                     <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
 
                     <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/Sand.jpg" alt="" /></div>
