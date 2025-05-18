@@ -1,15 +1,27 @@
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Hero from './Hero';
+import MainFirst from './MainFirst';
+import MainSecond from './MainSecond';
+import MainThired from './MainThired';
+import MainFourth from './MainFourth';
+import MainFifth from './MainFifth';
+import MainSixth from './MainSixth';
+
 function Home() {
 
   return (
     <>
-    
-
-
-     
-
- <h1 className="text-3xl text-center text-red-700"
-      >Home</h1>
-
+   <Navbar/>
+   <Hero/>
+   <MainFirst/> 
+   <MainSecond/>
+   <MainThired/>
+   <MainFourth/>
+   <MainFifth/>
+   <MainSixth/>    
+  <Footer/>
+  
     </>
   )
 }

@@ -2,7 +2,7 @@
 function Footer() {
     return (
 
-        <div className=" mt-16 w-[100%]">
+        <div className=" mt-8 w-[100%]">
 
 
                                                          {/* Logo & Tagline Section */}
