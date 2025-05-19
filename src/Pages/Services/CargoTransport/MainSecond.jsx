@@ -21,7 +21,7 @@ function MainSecond() {
 
                 <div data-aos="fade-up" className="  p-3 shadow-lg ml-4 mt-3 border border-stone-200 rounded-b-2xl">
                     <p className="text-indigo-700 font-semibold pl-1"><i className="fa-solid fa-car-side scale-[1.5]"></i></p>
-                    <p className="text-indigo-700 pt-4">Step 03</p>Name
+                    <p className="text-indigo-700 pt-4">Step 03</p>
                     <p className="text-indigo-700 font-bold text-2xl pt-6">TRACK YOUR CARGO</p>
                 </div>
 
