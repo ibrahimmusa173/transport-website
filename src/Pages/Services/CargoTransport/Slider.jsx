@@ -1,224 +1,88 @@
 
-// function Slider() {
-//   return (
-//     <>
-      
-           
-
-
-//                        <div className="border border-black  bg-violet-50 ">
-
-//                          <div className="flex items-center  text-center text-5xl font-semibold text-indigo-800 my-8">What Our Clients Say About Us</div>
-
-
-
-//                                                {/* Slider */}
-//                                                <div className="grid md:grid-cols-2">
-//                          <div className=" m-12 bg-white shadow-lg rounded-xl ">
-
-
-
-//                                               {/* First Clint */}
-//                       <div className="   mt-4 border border black ">
-                        
-//                       <div className="flex h-[40] border border black">  <div className="border border-slate-700 h-14 w-14 rounded-full mx-4 my-4 flex items-center justify-center"><i className="fa-solid fa-truck-pickup scale-[2]"></i> </div>
-
-//                         <div className=" mx-4 my-4 ">
-//                            <p className="font-bold text-xl text-indigo-700">John</p>
-//                             <p className="text-indigo-700">Operations Director </p></div> 
-                            
-
-//                             <div className=" scale-[2.5] h-full mx-8 mt-10">
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-                            
-//                             </div></div> </div>
-                        
-                        
-
-//                         <div className=" p-4 border border-black">
-//                            <div className="font-bold text-xl text-indigo-700">Outstanding reliability and efficiency!</div>    
-//                          <div className="text-indigo-700 text-lg mt-2">Their heavy-duty fleet solutions transformed our supply chain operations. The real-time GPS tracking and preventive maintenance programs ensured our trucks stayed on the road, even during peak seasons. With their support. </div>
-//                         </div>
-                        
-                        
-                        
-
-
-
-//                                                      {/* Second Clint */}
-
-//                           <div className="   mt-4 ">
-                        
-//                        <div className="flex h-[40] border border black">
-//                          <div className="border border-slate-700 h-14 w-14 rounded-full mx-4 my-2 flex items-center justify-center"><i className="fa-solid fa-face-smile scale-[2]"></i> </div>
-
-//                         <div className=" mx-4 my-4">
-//                             <p className="font-bold text-xl text-indigo-700">Maria</p>
-//                             <p className="text-indigo-700">Logistics Manager</p>
-//                             </div>
-
-//                             <div className=" scale-[2.5] h-full mx-8 mt-10">
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-                            
-//                             </div></div> </div>
-                        
-                        
-
-//                         <div className=" p-4">
-//                            <div className="font-bold text-xl text-indigo-700">Outstanding reliability and efficiency!</div>    
-//                          <div className="text-indigo-700 text-lg mt-2">Their heavy-duty fleet solutions transformed our supply chain operations. The real-time GPS tracking and preventive maintenance programs ensured our trucks stayed on the road, even during peak seasons. With their support. </div>
-//                            </div>
-
-
-
-
-
-//                                                    {/* Thired Clint */}
-//                          <div className="  mt-4">
-//                         <div className="flex h-[40] border border black">
-
-//                         <div className="border border-slate-700 h-14 w-14 rounded-full mx-4 my-2 flex items-center justify-center"><i className="fa-solid fa-circle-user scale-[2]"></i> </div>
-
-//                         <div className=" mx-4 my-4">
-//                             <p className="font-bold text-xl text-indigo-700">Sarah</p>
-//                             <p className="text-indigo-700">Supply Chain Manager </p>
-//                             </div>
-
-//                             <div className=" scale-[2.5] h-full mx-8 mt-10">
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-//                             <span className="transform scale-150 text-amber-500">&#8902;</span>
-                            
-//                             </div></div> </div>
-                        
-                        
-
-//                         <div className=" p-4 ">
-//                            <div className="font-bold text-xl text-indigo-700">Exceptional service quality </div>    
-//                          <div className="text-indigo-700 text-lg mt-2">Working with this team has significantly improved our logistics efficiency. Their innovative solutions and dedicated support have made them an invaluable partner in our supply chain operations.</div>
-//                         </div>
-
-
-
-//                          </div></div></div>
-
-
-
-//     </>
-//   )
-// }
-
-// export default Slider
-
-
-
 
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
     name: "John",
-    role: "Operations Director",
-    icon: "fa-truck-pickup",
-    title: "Outstanding reliability!",
-    feedback:
-      "Their heavy-duty fleet solutions transformed our supply chain operations. The real-time GPS tracking and preventive on the road, even during peak seasons.",
+    title: "Operations Director",
+    quote: "Outstanding reliability and efficiency!",
+    text: "Their heavy-duty fleet solutions transformed our supply chain operations. The real-time GPS tracking and preventive maintenance programs .",
   },
   {
-    name: "Maria",
-    role: "Logistics Manager",
-    icon: "fa-face-smile",
-    title: "Reliable and professional service!",
-    feedback:
-      "With exceptional fleet support, our logistics never miss a beat. The team is always responsive and provides top-tier solutions for our business needs.",
+    name: "Jane",
+    title: "Logistics Manager",
+    quote: "Truly revolutionary!",
+    text: "Thanks to their advanced tracking tools, our deliveries are always on schedule. I highly recommend their services to any logistics firm.",
   },
   {
-    name: "Sarah",
-    role: "Supply Chain Manager",
-    icon: "fa-circle-user",
-    title: "Exceptional service quality",
-    feedback:
-      "Working with this team has significantly improved our logistics efficiency. Their innovative solutions and dedicated support have made them an invaluable partner.",
+    name: "Michael",
+    title: "Fleet Supervisor",
+    quote: "Unmatched service quality!",
+    text: "Their support team is top-notch. They always respond promptly and help us maintain peak efficiency in fleet operations.",
   },
 ];
 
-function Slider() {
-  const [current, setCurrent] = useState(0);
+function Practice1() {
+  const [index, setIndex] = useState(0);
 
-  const prevSlide = () => {
-    setCurrent((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
+  const nextTestimonial = () => {
+    setIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
   };
 
-  const nextSlide = () => {
-    setCurrent((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
+  const prevTestimonial = () => {
+    setIndex((prevIndex) =>
+      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+    );
   };
+
+  const testimonial = testimonials[index];
 
   return (
-    <div className="bg-violet-50  px-4 py-8">
-      <h2 className="text-center text-3xl md:text-5xl font-semibold text-indigo-800 mb-8">
+    <div className="my-20 px-4 sm:px-10 md:px-40 py-10 border border-gray-200 shadow-lg rounded-2xl bg-white">
+      <h2 className="text-4xl font-bold text-center text-indigo-700 mb-10">
         What Our Clients Say About Us
       </h2>
 
-      <div className="relative md:max-w-[30%]  mx-auto bg-white shadow-xl rounded-xl p-6">
-        {/* Testimonial Card */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
-          <div className="flex items-center">
-            <div className="h-16 w-16 rounded-full border border-slate-700 flex items-center justify-center text-indigo-700">
-              <i className={`fa-solid ${testimonials[current].icon} text-2xl`} />
-            </div>
-            <div className="ml-4">
-              <p className="text-xl font-bold text-indigo-700">
-                {testimonials[current].name}
-              </p>
-              <p className="text-indigo-700">{testimonials[current].role}</p>
-            </div>
-          </div>
-          <div className="flex gap-1 sm:ml-auto text-amber-500 text-xl">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i}>&#8902;</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <p className="text-xl font-bold text-indigo-700">
-            {testimonials[current].title}
-          </p>
-          <p className="text-indigo-700 text-lg mt-2">
-            {testimonials[current].feedback}
-          </p>
-        </div>
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-center mt-6 gap-4">
-          <button
-            onClick={prevSlide}
-            className="px-4 py-2 bg-gray-200 text-black rounded-full shadow-lg hover:bg-gray-300"
+      <div className="relative max-w-3xl mx-auto">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.5 }}
+            className="text-center px-6"
           >
-            <i className="fa-solid fa-arrow-left"></i>
+            <p className="text-xl font-bold text-indigo-700">{testimonial.name}</p>
+            <p className="text-indigo-500 mb-4">{testimonial.title}</p>
+            <h3 className="text-2xl font-semibold text-indigo-700 mb-2">
+              {testimonial.quote}
+            </h3>
+            <p className="text-indigo-600 text-lg">{testimonial.text}</p>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-10 flex justify-center space-x-8">
+          <button
+            onClick={prevTestimonial}
+            className="text-indigo-600 hover:text-indigo-800 transition"
+          >
+            <ChevronLeft size={40} />
           </button>
           <button
-            onClick={nextSlide}
-            className="px-4 py-2 bg-gray-200 text-black rounded-full hover:bg-gray-300"
+            onClick={nextTestimonial}
+            className="text-indigo-600 hover:text-indigo-800 transition"
           >
-            <i className="fa-solid fa-arrow-right"></i>
+            <ChevronRight size={40} />
           </button>
-        
+        </div>
       </div>
     </div>
   );
 }
 
-export default Slider;
+export default Practice1;
