@@ -1,0 +1,2265 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.eslintrc.cjs
+.gitignore
+index.html
+package.json
+postcss.config.js
+public/images/Icons/chooseus1.svg
+public/images/Icons/chooseus2.svg
+public/images/Icons/chooseus3.svg
+public/images/Icons/tick.svg
+public/vite.svg
+README.md
+src/App.css
+src/App.jsx
+src/assets/react.svg
+src/Components/Footer/Footer.jsx
+src/Components/Navbar/Desktop.jsx
+src/Components/Navbar/Mobile.jsx
+src/Components/Navbar/Navbar.jsx
+src/Components/Navbar/Whatsapp.jsx
+src/index.css
+src/main.jsx
+src/Pages/About/About.jsx
+src/Pages/About/Hero.jsx
+src/Pages/About/Main.jsx
+src/Pages/Contact/Contact.jsx
+src/Pages/Contact/ContactForm.jsx
+src/Pages/Contact/Hero.jsx
+src/Pages/Home/Hero.jsx
+src/Pages/Home/Home.jsx
+src/Pages/Home/MainFifth.jsx
+src/Pages/Home/MainFirst.jsx
+src/Pages/Home/MainFourth.jsx
+src/Pages/Home/MainSecond.jsx
+src/Pages/Home/MainSixth.jsx
+src/Pages/Home/MainThired.jsx
+src/Pages/Ourfleet/Hero.jsx
+src/Pages/Ourfleet/Ourfleet.jsx
+src/Pages/Ourfleet/Pictures.jsx
+src/Pages/Services/CargoTransport/CargoTransport.jsx
+src/Pages/Services/CargoTransport/Hero.jsx
+src/Pages/Services/CargoTransport/MainFirst.jsx
+src/Pages/Services/CargoTransport/MainSecond.jsx
+src/Pages/Services/CargoTransport/Slider.jsx
+src/Pages/Services/Construction/Construction.jsx
+src/Pages/Services/Construction/Hero.jsx
+src/Pages/Services/Construction/MainFirst.jsx
+src/Pages/Services/Construction/MainSecond.jsx
+src/Pages/Services/Material/Hero.jsx
+src/Pages/Services/Material/Main.jsx
+src/Pages/Services/Material/Material.jsx
+src/Pages/Services/WaterTransport/Hero.jsx
+src/Pages/Services/WaterTransport/MainFirst.jsx
+src/Pages/Services/WaterTransport/MainSecond.jsx
+src/Pages/Services/WaterTransport/WaterTransport.jsx
+tailwind.config.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".eslintrc.cjs">
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: '18.2' } },
+  plugins: ['react-refresh'],
+  rules: {
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+  },
+}
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="public/images/Icons/chooseus1.svg">
+<svg width="64" height="65" viewBox="0 0 64 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.6667 39.4998V13.9998H26.6667V39.4998L21.6667 34.8332L16.6667 39.4998ZM33.3333 44.4998V0.666504H43.3333V34.4998L33.3333 44.4998ZM0 55.9998V27.3332H10V45.9998L0 55.9998ZM0 64.1665L21.5 42.6665L33.3333 52.8332L52 34.1665H46.6667V27.4998H63.3333V44.1665H56.6667V38.8332L33.6667 61.8332L21.8333 51.6665L9.33333 64.1665H0Z" fill="white"/>
+</svg>
+</file>
+
+<file path="public/images/Icons/chooseus2.svg">
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M53.3335 29.9998C53.3335 47.7665 26.6668 47.7665 26.6668 29.9998H33.3335C33.3335 38.8998 46.6668 38.8998 46.6668 29.9998M66.6668 59.9998V69.9998H13.3335V59.9998C13.3335 51.0998 31.1002 46.6665 40.0002 46.6665C48.9002 46.6665 66.6668 51.0998 66.6668 59.9998ZM60.3335 59.9998C60.3335 57.8665 49.9002 52.9998 40.0002 52.9998C30.1002 52.9998 19.6668 57.8665 19.6668 59.9998V63.6665H60.3335M41.6668 6.6665C42.6002 6.6665 43.3335 7.39984 43.3335 8.33317V18.3332H46.6668V9.99984C49.0259 11.0916 51.0023 12.8671 52.3397 15.0961C53.6771 17.3251 54.3137 19.9046 54.1668 22.4998C54.1668 22.4998 56.5002 22.9665 56.6668 26.6665H23.3335C23.3335 22.9665 25.8335 22.4998 25.8335 22.4998C25.6867 19.9046 26.3232 17.3251 27.6606 15.0961C28.998 12.8671 30.9745 11.0916 33.3335 9.99984V18.3332H36.6668V8.33317C36.6668 7.39984 37.4002 6.6665 38.3335 6.6665" fill="white"/>
+</svg>
+</file>
+
+<file path="public/images/Icons/chooseus3.svg">
+<svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M55.6666 55.6665C57.4666 55.6665 58.9999 57.1998 58.9999 58.9998C58.9999 60.7998 57.4666 62.3332 55.6666 62.3332H15.6666C13.8666 62.3332 12.3332 60.7998 12.3332 58.9998C12.3332 57.1998 13.8666 55.6665 15.6666 55.6665H55.6666ZM55.6666 50.6665H15.6666C11.0999 50.6665 7.33325 54.4332 7.33325 58.9998C7.33325 63.5665 11.0999 67.3332 15.6666 67.3332H55.6666C57.8767 67.3332 59.9963 66.4552 61.5591 64.8924C63.1219 63.3296 63.9999 61.21 63.9999 58.9998C63.9999 56.7897 63.1219 54.6701 61.5591 53.1073C59.9963 51.5445 57.8767 50.6665 55.6666 50.6665ZM63.9999 30.6665H53.9999V17.3332H37.3332L27.3332 30.6665V47.3332H67.3333L63.9999 30.6665ZM32.4666 30.6665L38.9999 22.3332H47.3332V30.6665H32.4666ZM26.5333 5.3665L9.86658 0.666504L0.666582 33.4332C-0.466752 37.6998 2.03325 42.1332 6.33325 43.3332L10.1999 44.3998L21.1666 34.9665L8.23325 31.3665L14.4999 8.8665L23.7999 11.4665C25.6666 12.4332 29.6999 15.1332 32.2332 18.5665L35.6666 13.9998H37.1332C32.9332 8.69984 26.8333 5.53317 26.5333 5.3665Z" fill="white"/>
+</svg>
+</file>
+
+<file path="public/images/Icons/tick.svg">
+<svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.5001 0.916748C9.72925 0.916748 0.916748 9.72925 0.916748 20.5001C0.916748 31.2709 9.72925 40.0834 20.5001 40.0834C31.2709 40.0834 40.0834 31.2709 40.0834 20.5001C40.0834 9.72925 31.2709 0.916748 20.5001 0.916748ZM16.5834 30.2917L6.79175 20.5001L9.553 17.7388L16.5834 24.7497L31.4472 9.88591L34.2084 12.6667L16.5834 30.2917Z" fill="white"/>
+</svg>
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="README.md">
+# transport-website
+</file>
+
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="src/Pages/Contact/ContactForm.jsx">
+function ContactForm() {
+
+    return (
+        <>
+
+            <div className=" p-4 flex flex-col  bg-slate-100   md:w-[100%] items-center ">
+                <div className="md:w-[60%] grid md:grid-cols-2 gap-4  ">
+
+
+
+
+
+
+
+                                           {/* Information Right Side */}
+                    <div className="w-[100%] h-[100%]">
+
+                        <div><p className="font-semibold py-4 ">Need fast and reliable transportation? <br />
+                            We are here to help. Contact us today!</p></div>
+
+                        <div><p>Our dedicated customer service specialists are available 24/7/365.</p></div>
+
+                        <div className="flex flex-col  my-8 p-2 bg-white rounded-lg">
+                            <p className=" mt-4 text-zinc-700 " ><i className="fa-solid fa-location-dot mr-1 text-orange-400 scale-[1]"></i> Office No 06, Level 26th, Aspin Commercial Tower, Sheikh Zayed
+                                Road, Dubai, UAE</p>
+                            <p className=" text-zinc-700 mt-4 " > <i className="fa-solid fa-envelope mr-2 text-orange-400 scale-[1.4]"></i>info@dynamicleotransport.ae</p>
+                            <p className=" mt-4 text-zinc-700 " ><i className="fa-solid fa-phone text-orange-400 scale-[1.4]"></i> +971 521205514</p>
+
+                        </div>
+
+
+                        <div className=" mt-4 rounded-lg h-30 ">
+                            <img className="w-full h-40" src="images/Hero/Site.jpg" alt="" />
+                        </div>
+                    </div>
+
+
+
+
+
+
+                                                  {/* Form Right */}
+
+                    <div className=" w-[90%] h-[100%]  bg-white  p-4 shadow-2xl">
+
+                        <table className="w-[100%]">
+                            <p className="text-xs text-slate-900 mb-2">First name</p>
+                            <input className="border border-slate-400 p-2 rounded-md w-[100%] mb-6" type="text" placeholder="Enter your first name" />
+                            <p className="text-xs text-slate-900 mb-2">Email</p>
+                            <input className="border border-slate-400 p-2 rounded-md w-[100%] mb-6" type="text" placeholder="Enter your email" />
+                            <p className="text-xs text-slate-900 mb-2">Contact No</p>
+                            <input className="border border-slate-400 p-2 rounded-md w-[100%] mb-6" type="text" placeholder="Enter your contact number" />
+                            <p className="text-xs text-slate-900 mb-2">Message</p>
+                            <textarea className="border border-slate-400 p-2  rounded-md w-[100%] mb-6 " name="" id="" placeholder="Leave us a massage" rows="4" ></textarea>
+                            <button className="w-[100%] bg-orange-400 py-2 text-white rounded-md">Send Messsage</button>
+                        </table>
+
+                    </div> </div></div>
+
+
+        </>
+    )
+}
+
+export default ContactForm
+</file>
+
+<file path="src/Pages/Contact/Hero.jsx">
+function Hero() {
+
+    return (
+        <>
+
+            <div className="relative h-[430px] bg-black " >
+                <img className="w-full h-full opacity-50" src="images/Contact us/contact.jpg" alt="" />
+                <div data-aos="fade-up" className="absolute  h-32  w-[60%] inset-0 m-auto flex flex-col p-2 items-center justify-center  bg-stone-700 bg-opacity-80  hover:bg-stone-600" >
+                    <p className="sm:font-bold sm:text-2xl text-amber-400 ">CONTACT US</p>
+                    <p className="sm:text-sm text-xs text-white bg-brown-400  text-center">We’re here to assist you with all your shipping inquiries. Whether you have urgent requests or general questions, our team is ready to provide the support you need. Reach out to DLT today!</p>
+                </div>
+            </div>
+
+
+
+        </>
+    )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Home/MainFifth.jsx">
+function Home() {
+
+  return (
+    <>
+    
+         <div data-aos="fade-up" className=" h-16 mb-8 flex items-center justify-center" >
+        <p className="text-indigo-900 sm:text-4xl sm:font-bold text-2xl font-semibold text-center">OUR PARTNERS</p>
+      </div>
+
+
+      {/* <div class="w-full max-w-screen overflow-hidden border-2 border-gray-700 bg-white ">
+      <div class="flex animate-scroll whitespace-nowrap items-center justify-center"> */}
+      <div className="w-full max-w-screen bg-white overflow-hidden">
+        <div className="flex animate-scroll items-center justify-center ">
+          {/* <!-- Duplicate items for seamless scroll --> */}
+          <div className="flex ">
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo1.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo2.jpg" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo3.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo4.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo5.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo6.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo7.jpg" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo8.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo9.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo10.png" alt="" /></div>
+          </div>
+
+          {/* <!-- Repeat same items --> */}
+          <div className="flex ">
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo1.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo2.jpg" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo3.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo4.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo5.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4 "><img className="h-full w-full object-contain" src="images/Logo1/Logo6.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo7.jpg" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo8.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo9.png" alt="" /></div>
+            <div className="flex-shrink-0 w-32 h-24 ml-4  "><img className="h-full w-full object-contain" src="images/Logo1/Logo10.png" alt="" /></div>
+          </div>
+        </div>
+      </div>
+
+
+  
+    </>
+  )
+}
+
+export default Home
+</file>
+
+<file path="src/Pages/Home/MainFirst.jsx">
+function MainFirst() {
+
+  return (
+    <>
+    
+
+ <div className="flex items-center justify-center container ">
+      <div data-aos="fade-up" className="w-[580px]  flex flex-col items-center justify-center mt-4 mb-4">
+        <p className="text-4xl font-bold text-yellow-600">Our Services</p>
+        <div className=" px-8 py-6 mt-4 text-stone-600 rounded-lg flex flex-col items-center justify-center
+               shadow-lg shadow-red-300 container mx-auto text-sm">
+          <p>  Comprehensive logistics solutions tailored to meet your business needs, </p>
+          <p> needs, delivering excellence across the UAE and beyond.</p>
+        </div></div></div>
+
+
+
+
+
+
+           
+      <div data-aos="fade-up" className=" grid md:grid-cols-2  w-full mb-4 px-10 ">
+        <div className="p-4 group"><div className="h-[500px] bg-black  relative"><img className="w-full h-full   object-cover opacity-50 group-hover:opacity-35 duration-300" src="images/Services/services1.jpg" alt="" />
+        <div  className="absolute  transform translate-y-full group-hover:translate-y-0 transition-all duration-500  inset-0 ml-4 mt-[460px]  text-white">Construction Equipment Supply</div>
+        </div></div>
+
+        <div className=" ">
+        <div className="p-4 group"><div className="h-[234px] bg-black  relative"><img className="w-full h-full   object-cover opacity-50 group-hover:opacity-35 duration-300" src="images/Services/services2.jpg" alt="" />
+        <div  className="absolute  transform translate-y-full group-hover:translate-y-0 transition-all duration-500  inset-0 ml-4 mt-[190px]  text-white">Site Assistance</div>
+           </div></div>
+
+      <div className="p-4 group"><div className="h-[234px] bg-black  relative"><img className="w-full h-full   object-cover opacity-40 group-hover:opacity-30 duration-300" src="images/Services/services3.jpg" alt="" />
+        <div  className="absolute  transform translate-y-full group-hover:translate-y-0 transition-all duration-500  inset-0 ml-4 mt-[190px]  text-white">Material Supply</div>
+        </div></div></div>
+      </div>
+
+     
+
+
+
+    </>
+  )
+}
+
+export default MainFirst
+</file>
+
+<file path="src/Pages/Home/MainFourth.jsx">
+function MainFourth() {
+
+  return (
+    <>
+    
+ <div className="flex items-center justify-center">
+      <div className="  w-[450px] flex items-center justify-center mb-8  ">
+        <div className=" flex flex-col items-center justify-center p-2"> <div className="border-4 border-indigo-700 h-20 w-20 rounded-full flex flex-col items-center justify-center font-medium hover:border-4 hover:border-orange-400 duration-300">32</div><p className="mt-2 font-semibold">No of Trucks</p></div>
+        <div className=" flex flex-col items-center justify-center p-2"> <div className="border-4 border-indigo-700 h-20 w-20 rounded-full flex flex-col items-center justify-center font-medium hover:border-4 hover:border-orange-400 duration-300">64</div><p className="mt-2 font-semibold ">Drivers</p></div>
+        <div className=" flex flex-col items-center justify-center p-2"> <div className="border-4 border-indigo-700 h-20 w-20 rounded-full flex flex-col items-center justify-center font-medium hover:border-4 hover:border-orange-400 duration-300">12</div><p className="mt-2 font-semibold">Routes</p></div>
+        <div className=" flex flex-col items-center justify-center p-2"> <div className="border-4 border-indigo-700 h-20 w-20 rounded-full flex flex-col items-center justify-center font-medium hover:border-4 hover:border-orange-400 duration-300">12</div><p className="mt-2 font-semibold">Offices</p></div>
+      </div></div>
+
+
+    </>
+  )
+}
+
+export default MainFourth
+</file>
+
+<file path="src/Pages/Home/MainSecond.jsx">
+function MainSecond() {
+
+  return (
+    <>
+    
+            <div className="  mb-2 bg-indigo-900 flex items-center justify-center">
+        <p className="text-white text-center text-sm px-20 py-4">Partnering with DLT brings valuable resources, expertise and efficiency to your supply chain, empowering your business to expand and thrive</p>
+      </div>
+
+
+
+
+
+
+
+
+      <div data-aos="fade-up" className=" mb-2 grid md:grid-cols-2 ">
+        <div className="  mt-8 pl-10 pr-2">
+          <div> <p className="text-2xl font-bold text-indigo-900">The Network of the Future</p> </div>
+          <div className="pt-4 text-indigo-700 ">
+            <p className="text-justify">Learn more about the Network of the Future, an innovative network powered by leaner loops with fewer port calls per service, an extensive shuttle network, and industry-leading hubs.<br /><br />
+              With the new East West network, our ambition is to deliver a flexible and well-connected ocean network that aims to provide unmatched and industry-leading reliability above 90 percent (as measured by SeaIntel) when the new network is fully phased in.</p>
+          </div> </div>
+        <div className=" ml-6  pr-8 mt-8"><img className="w-full h-64 rounded-md  object-cover" src="images/Home/Network.jpg" alt="" /></div>
+      </div>
+
+
+    </>
+  )
+}
+
+export default MainSecond
+</file>
+
+<file path="src/Pages/Home/MainSixth.jsx">
+function MainSixth() {
+
+  return (
+    <>
+    
+             <div data-aos="fade-up" className="flex flex-col items-center justify-center mb-4 pt-8 mt-8">
+        <div>    <i className="fa-solid fa-globe text-yellow-600 scale-[2]"></i></div>
+        <div> <p className=" sm:text-4xl text-2xl sm:font-bold font-semibold text-yellow-600 mt-2 mb-2 text-center">OUR DELIVERY MAP</p></div>
+        <div><p className="text-stone-600 text-center text-xs">Discover our worldwide network of operations and services. With strategic <br/> locations across the globe, we are positioned to serve you wherever you are.
+        </p></div>
+      </div>
+
+
+
+
+
+      <div data-aos="fade-up" className=" flex items-center justify-center mb-16"><img className="shadow-lg h-[470px] w-[550px]" src="images/Home/MapHome.jpg" alt="" /></div>
+
+
+
+
+
+    </>
+  )
+}
+
+export default MainSixth
+</file>
+
+<file path="src/Pages/Home/MainThired.jsx">
+function MainThired() {
+
+  return (
+    <>
+    
+             <div className=" mb-8  mx-4  grid md:grid-cols-3" >
+        <div data-aos="fade-up" className=" ml-3 mt-4 p-4 shadow-lg ">
+          <p className="text-indigo-700 font-bold text-xs ">How to get started<i className="fa-solid fa-car-side ml-2"></i></p>
+          <p className="text-slate-600 pt-2 text-justify">Whether you need to find prices, place a booking, submit documents, or track your cargo, our step-by-step guides will help you find your way around.</p>
+          <button className="border border-indigo-700 p-2 mt-3 text-indigo-700 rounded-sm">Learn more</button>
+        </div>
+
+        <div data-aos="fade-up" className=" ml-3 mt-4 p-4 shadow-lg ">
+          <p className="text-indigo-700 font-bold text-xs">Ready to book?<i className="fa-solid fa-face-smile ml-2"></i></p>
+          <p className="text-slate-600 pt-2 text-justify">Sign up to book, manage and pay your shipments online, and access a suite of products and services designed to simplify your supply chain.</p>
+          <button className="border border-indigo-700 p-2 mt-3 text-indigo-700 rounded-sm">Registar Now</button>
+        </div>
+
+        <div data-aos="fade-up" className="  ml-3 mt-4 p-4 shadow-lg ">
+          <p className="text-indigo-700 font-bold text-xs">Become a logistics expert<i className="fa-solid fa-arrows-turn-right pl-2"></i></p>
+          <p className="text-slate-600 pt-2 text-justify">Discover insights, introductory videos, explanatory articles and gain the confidence you need to optimise your supply chain.</p>
+          <button className="border border-indigo-700 p-2 mt-3 text-indigo-700 rounded-sm">Learn more</button>
+        </div>  </div>
+
+    </>
+  )
+}
+
+export default MainThired
+</file>
+
+<file path="src/Pages/Ourfleet/Hero.jsx">
+function Hero() {
+
+    return (
+        <>
+
+            <div className="relative h-[430px]  bg-black" >
+                <img className="w-full h-full opacity-40" src="images/OurFleet/ourfleethero.jpg" alt="" />
+                <div data-aos="fade-up" className="absolute  h-24 w-40  sm:w-80 inset-0 container m-auto flex items-center justify-center bg-black bg-opacity-60 text-white font-semibold text-2xl sm:font-bold sm:text-5xl" >Our Fleets</div>
+            </div>
+
+
+
+        </>
+    )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Ourfleet/Pictures.jsx">
+function Pictures() {
+
+  return (
+    <>
+      
+     <div className="mx-12 my-8 grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+
+                <div className=" flex flex-col">
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our1.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our2.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our3.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our4.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our5.jpg" alt="" /></div>
+                </div>
+
+
+                <div className=" flex flex-col">
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our6.jpg" alt="" /></div>
+                <div className="  h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our7.jpg" alt="" /></div>
+                <div className="  h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our8.jpg" alt="" /></div>
+                <div className="  h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our9.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our10.jpg" alt="" /></div>
+                </div>
+
+
+                <div className=" flex flex-col">
+                <div className="  h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our11.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our12.jpg" alt="" /></div>
+                <div className="  h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our13.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our14.jpg" alt="" /></div>
+                <div className=" h-40"><img className="rounded-xl p-2 w-full h-full object-cover" src="images/OurFleet/Our15.jpg" alt="" /></div>
+                </div>
+
+
+              
+
+
+              </div>
+
+    
+    </>
+  )
+}
+
+export default Pictures
+</file>
+
+<file path="src/Pages/Services/CargoTransport/Hero.jsx">
+function Hero() {
+
+    return (
+        <>
+
+            <div className="relative md:h-[430px] h-[300px] bg-black" >
+                <img className="w-full h-full opacity-50 object-cover" src="images/Hero/cargobylight.jpg" alt="" />
+                <div data-aos="fade-up" className="absolute border border-black h-20 text-center md:w-[700px] w-[70%] inset-0 m-auto flex items-center justify-center bg-black bg-opacity-50 text-orange-400 md:font-bold font-semibold md:text-4xl text-2xl" >
+                    Cargo by Light & Heavy trucks</div>
+            </div>
+
+        </>
+    )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Services/CargoTransport/MainFirst.jsx">
+function MainFirst() {
+
+    return (
+        <>
+                                                             {/* Section 1 */}
+            <div className=" mb-2 m-8 grid md:grid-cols-2 md:gap-4 ">
+                <div className="   p-4">
+                    <div > <p data-aos="fade-right" className="text-3xl font-bold text-indigo-900  ">Why Choose Our Cargo Services?</p><br /> </div>
+                    <p className="text-indigo-800 font-normal text-justify">At Dynamic Leo Transport, we deliver fast, reliable, and affordable cargo solutions tailored to your needs. With real-time tracking, secure handling, and flexible scheduling, your goods are in safe hands every step of the way.</p><div>
+                        <div data-aos="fade-up" className="flex bg-indigo-900 p-2 mt-4">
+                            <div className="  flex items-center justify-content scale-[2.5] ml-4"><i className="fa-solid fa-circle-check text-white "></i></div>
+                            <div className=" flex ml-8 text-white "><p className="font-medium  pr-16 inline"><strong>Fast Delivery:</strong>Get your goods delivered quickly with our fleet of light trucks.</p></div>
+                        </div>
+
+                        <div data-aos="fade-up" className=" flex bg-indigo-900 p-2 mt-2">
+                            <div className=" flex items-center justify-content scale-[2.5] ml-4"><i className="fa-solid fa-circle-check text-white "></i></div>
+                            <div className=" flex ml-8 text-white "><p className="font-medium  pr-16 inline"><strong>Fast Delivery:</strong>Get your goods delivered quickly with our fleet of light trucks.</p></div>
+                        </div>
+
+                        <div data-aos="fade-up" className=" flex bg-indigo-900 p-2 mt-2">
+                            <div className="  flex items-center justify-content scale-[2.5] ml-4"><i className="fa-solid fa-circle-check text-white "></i></div>
+                            <div className=" flex ml-8 text-white "><p className="font-medium  pr-16 inline"><strong>Fast Delivery:</strong>Get your goods delivered quickly with our fleet of light trucks.</p></div>
+                        </div> </div>  </div>
+
+                <div data-aos="fade-left" className="  p-4  h-[400px] "><img className="w-full h-full rounded-2xl object-cover" src="images/Services/cargo.png" alt="" /></div>       </div>
+
+
+
+        </>
+    )
+}
+
+export default MainFirst
+</file>
+
+<file path="src/Pages/Services/Construction/Hero.jsx">
+function Hero() {
+
+  return (
+    <>
+      
+       <div className="relative h-[430px]  bg-black " >
+                            <img className="w-full h-full opacity-50 object-cover" src="images/Hero/demolishwaste.jpg" alt="" />
+                          <div data-aos="fade-up" className="absolute border border-black h-20  md:w-[700px] w-[80%] inset-0 m-auto flex items-center justify-center bg-black bg-opacity-70 text-white font-semibold text-xl md:font-bold md:text-2xl text-center" >
+                          <p className="">CONSTRUCTION & DEMOLITION WASTE MANAGEMENT</p></div>
+                          </div>
+    
+    </>
+  )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Services/Construction/MainFirst.jsx">
+function MainFirst() {
+
+  return (
+    <>
+      
+       <div className=" mb-2 mx-14 mt-4 grid md:grid-cols-2">         
+                                     
+                          <div className="  mt-4  p-4">
+                          <p className="text-xl pl-5 text-indigo-800 font-semibold pb-4">WHAT WE OFFER</p> 
+                        <div> <p className="text-3xl font-bold text-indigo-900 pl-5">EXPERT CONSTRUCTION & DEMOLITION WASTE MANAGEMENT</p><br /> </div>
+                        <div className=" text-indigo-900 pl-5">
+                      <p className="mr-4 text-justify font-medium">Demolition, renovation and construction projects generate large amounts of different waste fractions that can be reused or recycled, if managed properly with our demolition services. If not, valuable materials risk being incinerated or end up in landfill. This leads to unnecessary use of virgin resources and emissions of pollutants and greenhouse gases.Our specialist teams focus on circular waste management solutions for various sub-sectors, including construction and demolition waste, energy and telecom, and railways. We are happy to be involved in all stages of your project - from pre-planning and inventory, to disassembly, sorting and transport solutions. We ensure that all waste is managed in a sustainable and environmentally friendly manner, minimizing the impact on the planet.</p>
+                        </div> </div>
+                        <div data-aos="fade-left" className="  h-full "><img className="w-full h-full rounded-3xl  p-4 object-cover" src="images/Services/offer.png" alt="" /></div>
+                    </div>
+    
+    </>
+  )
+}
+
+export default MainFirst
+</file>
+
+<file path="src/Pages/Services/Construction/MainSecond.jsx">
+function MainSecond() {
+
+  return (
+    <>
+      
+       <div className=" ml-8 flex flex-col items-center justify-center mt-4 mb-4">
+                <p className="text-4xl font-bold text-indigo-900 ml-8">WHY CHOOSE US?</p>
+               <div className=" px-8 py-4 text-indigo-900 rounded-lg flex flex-col items-center justify-center text-center">
+                <p>  You can confidently leave all your waste management to us – including circularity issues, 
+                legal accountability, and processing – and focus on your project.</p>
+                </div></div>
+
+
+
+                <div className="flex flex-col items-center justify-center mb-14 pb-8  mx-14 ">
+                <div className="grid md:grid-cols-2 md:gap-4 lg:grid-cols-3 lg:gap-4">
+                <div data-aos="fade-up" className="   mt-4 p-3">
+                    <div className="flex justify-center pb-14"><i className="fa-solid fa-circle-arrow-right scale-[5] text-indigo-400"></i></div>
+                    <p className="text-indigo-700 font-semibold text-xs">1. YOU GET A PARTNER WITH A CIRCULAR BUSINESS MINDSET</p>
+                    <p className="text-indigo-700 pt-4 text-justify">We care for your resources, and we also care for your business. With our advanced methods, we can reuse and recycle it to create the greatest value for your business.</p>    
+                </div>
+
+                <div data-aos="fade-up" className="  mt-4  p-3 ml-2">
+                    <div className="flex justify-center pb-14 "><i className="fa-solid fa-circle-user scale-[5] text-indigo-400"></i></div>
+                    <p className="text-indigo-700 font-semibold text-xs">2. WE SOLVE THE DECONTAMINATION</p>
+                    <p className="text-indigo-700 pt-4 text-justify">If needed, we carry out decontamination in locations where we identify hazardous waste. We also take care of asbestos, PCB and similar construction materials.</p>                    
+                </div>
+
+                    
+                <div data-aos="fade-up" className=" mt-4  p-2 ml-2  ">
+                    <div className="flex justify-center pb-14"><i className="fa-solid fa-circle-exclamation scale-[5] text-indigo-400"></i></div>
+                    <p className="text-indigo-700 font-semibold text-xs">3. WE MANAGE ALL FRACTIONS OF WASTE</p>
+                    <p className="text-indigo-700 pt-4 text-justify">We will make sure that all of your demolition and construction waste – including hazardous fractions – is handled efficiently and in accordance with all regulations.</p>    
+                </div> </div></div>
+    
+    </>
+  )
+}
+
+export default MainSecond
+</file>
+
+<file path="src/Pages/Services/Material/Hero.jsx">
+function Hero() {
+
+  return (
+    <>
+      
+     <div className="relative h-[430px] bg-black" >
+                            <img className="w-full h-full object-cover opacity-40" src="images/Hero/Material.jpg" alt="" />
+                          <div data-aos="fade-up" className="absolute h-16 md:h-20 w-80 md:w-[500px] inset-0 m-auto flex items-center justify-center bg-black bg-opacity-60 text-orange-300 font-bold text-xl  md:text-3xl" >RAW MATERIALS SUPPLY</div>
+                          </div>
+    
+    </>
+  )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Services/WaterTransport/Hero.jsx">
+function Hero() {
+
+  return (
+    <>
+      
+      <div className="relative h-[430px]  bg-black " >
+                            <img className="w-full h-full opacity-80 object-cover" src="images/Hero/drinkingwater.jpg" alt="" />
+                          <div data-aos="fade-up" className="absolute h-16 md:h-24 w-80 md:w-[700px] inset-0 m-auto flex items-center justify-center bg-black bg-opacity-50 text-orange-400 font-semibold text-2xl md:font-bold md:text-5xl" >Drinking water transport</div>
+                          </div>
+    
+    </>
+  )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Services/WaterTransport/MainFirst.jsx">
+function MainFirst() {
+
+  return (
+    <>
+
+
+
+
+
+                                        {/* Paragraph */}
+      <div className=" py-4 px-12 flex flex-col items-center justify-center text-indigo-900 text-center">
+        <p>Dynamic Leo Transport is committed to providing top-notch drinking water transport
+          services. With a fleet of well-maintained vehicles and a team of trained professionals, we
+          ensure that your drinking water arrives on time, in perfect condition, and with the highest
+          safety standards.</p>
+      </div>
+
+
+
+
+
+                                          {/* Section 1 */}
+      <div className=" mb-2 mx-8 overflow-hidden grid md:grid-cols-2">
+        <div data-aos="fade-right" className=" mt-8 pl-14">
+          <div> <p className="text-4xl font-bold text-indigo-900 pl-5">What Sets Us Apart</p><br /> </div>
+          <div className="pt-4 text-indigo-900 ">
+            <li className="text-2xl">Certified Clean Water Delivery</li> <br />
+            <li className="text-2xl">Punctual & Reliable Service</li>    <br />
+            <li className="text-2xl">Fleet of Specialized Vehicles</li>  <br />
+            <li className="text-2xl">24/7 Availability</li>              <br />
+            <li className="text-2xl">Customizable Delivery Schedules</li><br />
+          </div> </div>
+        <div data-aos="fade-left" className="  p-4 pr-10 h-full   mr-8"><img className="w-full h-full rounded-3xl object-cover" src="images/Services/setsapart.png" alt="" /></div>
+      </div>
+
+
+
+
+
+    </>
+  )
+}
+
+export default MainFirst
+</file>
+
+<file path="src/Pages/Services/WaterTransport/MainSecond.jsx">
+function MainSecond() {
+
+    return (
+        <>
+                                           {/* Section2 */}
+
+            <div className=" mr-12 p-8 bg-zinc-200 rounded-3xl mb-6 flex flex-col items-center justify-center ">
+
+                <div className="grid md:grid-cols-2 md:gap-4">
+
+
+
+                    <div data-aos="fade-up" className="  flex flex-col items-center justify-center p-4 mt-8 bg-white rounded-2xl">
+                        <p className="text-4xl font-bold text-indigo-900 pl-5">Residential Delivery</p>
+                        <p className="text-sky-950 pt-4 text-center">Get clean drinking water delivered directly to your home.      Perfect for households, apartments, and rural areas.</p>
+                    </div>
+
+
+                    <div data-aos="fade-up" className="  flex flex-col items-center justify-center p-4 mt-8 bg-white rounded-2xl">
+                        <p className="text-4xl font-bold text-indigo-900 p">Commercial Delivery</p>
+                        <p className="text-sky-950 pt-4 text-center">Large-scale drinking water supply for businesses, schools, offices, and more.</p>
+                    </div> </div>
+
+
+                <div className=" md:w-[60%]">
+                    <div data-aos="fade-up" className=" flex flex-col items-center justify-center p-4 mt-8 bg-white rounded-2xl">
+                        <p className="text-4xl font-bold text-indigo-900 pl-5 ">Bulk Water Transport</p>
+                        <p className="text-sky-950 pt-4 text-center">High-volume water deliveries for industries, construction sites, and large-scale projects.</p>
+                    </div>
+
+
+                </div></div>
+
+
+
+        </>
+    )
+}
+
+export default MainSecond
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+</file>
+
+<file path="src/Components/Navbar/Whatsapp.jsx">
+function WhatsApp() {
+  return (
+    <>
+      <div className="fixed z-50 ml-8 bottom-8 text-white scale-[1.6] rounded-3xl w-[30px] h-[30px] flex items-center justify-center bg-green-400">
+        <i className="fa-brands fa-whatsapp"></i>
+      </div>
+    </>
+  )
+}
+
+export default WhatsApp
+</file>
+
+<file path="src/index.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  
+}
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Montserrat", system-ui;
+}
+
+h1, h2, h3, h4, h5, h6,
+p, ul, ol, li, blockquote,
+pre, hr, address, fieldset, legend,
+table, caption, th, td,
+form, input, button, textarea, select, label {
+  margin: 0;
+  padding: 0;
+}
+
+
+img, a {
+  padding: 0;
+  margin: 0;
+  outline: none;
+  text-decoration: none;
+}
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00A896; 
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00A896;
+}
+
+/* external imports */
+.poppins {
+  font-family: "Poppins", sans-serif;
+}
+.cairo{
+  font-family: "Cairo", sans-serif;
+}
+
+
+/* custom css */
+
+.sectionlayout{
+  max-width: 1640px;
+  margin: auto;
+  padding: 0 2rem;
+}
+@media (max-width: 1023px) {
+  .sectionlayout{
+    padding: 0 1rem;
+  }
+  
+}
+@media (max-width: 767px) {
+  .sectionlayout{
+    padding: 0 1rem;
+  }
+  
+}
+</file>
+
+<file path="src/Pages/About/Hero.jsx">
+function Hero() {
+
+    return (
+        <>
+
+                                 {/* Hero Section */}
+            <div className="relative h-[460px]  mb-16 bg-black " >
+                <img className="w-full h-full object-cover " src="images/About us/hero.jpg" alt="" />
+                <div data-aos="fade-up" className="absolute  h-16 w-36 sm:w-52 inset-0 m-auto flex items-center justify-center hover:bg-black bg-black bg-opacity-50 hover:duration-300 text-orange-400 font-semibold text-2xl sm:font-bold sm:text-4xl" >About Us</div>
+                <div className="absolute left-1/2 transform -translate-x-1/2 -my-8 mx-1  border border-black bg-blue-900 bg-opacity-80 flex items-center justify-around w-[60%] min-w-60 h-[80px]">
+                    <div className="text-white "><p className="font-bold text-lg">1200+</p><p className="text-xs">clints</p></div>
+                    <div className="text-white "><p className="font-bold text-lg">20+</p><p className="text-xs">Cities</p></div>
+                    <div className="text-white "><p className="font-bold text-lg">60+</p><p className="text-xs">Drivers</p></div>
+                    <div className="text-white "><p className="font-bold text-lg">12+</p><p className="text-xs">Offices</p></div>
+                </div>
+            </div>
+
+        </>
+    )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/About/Main.jsx">
+function Main() {
+
+    return (
+        <>
+
+
+            {/* Main Section */}
+            <div className="py-4">
+            <div className="   bg-slate-50  px-8 grid md:grid-cols-2 gap-4 ">
+                <div data-aos="fade-up" className="  mt-8 ">
+                    <div> <p className="text-2xl font-bold text-yellow-600">About DLT</p> </div>
+                    <div className="pt-4 text-zinc-600 ">
+                        <p className="text-sm text-justify">DLT has been a trusted leader in the industry, delivering quality services and building strong partnerships with our clients. Our mission is to innovate and grow, while maintaining a strong commitment to customer satisfaction and sustainable practices. We are proud of our team and infrastructure, which allow us to serve over 1200+ clients across 20+ cities with 60+ drivers and 12 offices.
+                            <br /><br />    Our vision is to continue expanding and delivering value-driven solutions, ensuring we remain at the forefront of our industry. Together, we aim to create a future where our services improve lives and make a positive impact.
+                        </p>
+                    </div> </div>
+                <div data-aos="fade-up" className="   pt-4 rounded-md px-4 h-[270px] "><img className="w-full h-full bg-black opacity-  object-cover rounded-md  hover:scale-[1.05] duration-300" src="images/About us/about.png" alt="" /></div>
+            </div></div>
+
+
+
+        </>
+    )
+}
+
+export default Main
+</file>
+
+<file path="src/Pages/Home/Hero.jsx">
+function Hero() {
+
+  return (
+
+     
+    <>
+      <div className="relative h-[600px] bg-black">
+        {/* Video with autoPlay and loop attributes */}
+        <video 
+          className="w-full h-full object-cover opacity-30" 
+          autoPlay={true}
+          loop={true}
+          muted={true}
+          playsInline={true}
+        >
+          <source src="/images/Video/transportVideo.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        <div className="absolute inset-0 w-full h-full flex items-center justify-left pl-8 sm:pl-20">
+          <div data-aos="fade-up" className="w-[40%] sm:w-[280] md:w-[390px] flex flex-col text-white">
+            <p className="sm:font-semibold md:font-bold font-normal md:text-4xl sm:text-2xl text-xl">Logistics, Simplified.</p>
+            <p className="md:text-2xl sm:text-xl mt-1.5">Logistics Solutions</p>
+            <p className="text-xs text-justify mt-3">From fulfillment to the last mile we pick, pack, ship, and deliver while prioritizing speed, costs and quality for shippers with over 3,000 monthly orders.</p>
+            
+            <div className="mt-4 flex flex-col sm:flex-row">
+              <button className="px-2 md:px-4 md:py-2 text-black font-semibold ml-2 mt-2 bg-amber-400 rounded-sm hover:bg-amber-300">Visit Now</button>
+              <button className="px-2 md:px-4 md:py-2.5 text-white font-semibold ml-2 mt-2 rounded-sm border-2 border-amber-400 hover:bg-amber-400 hover:bg-opacity-20">Contact Us</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+export default Hero
+</file>
+
+<file path="src/Pages/Ourfleet/Ourfleet.jsx">
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Hero from './Hero';
+import Pictures from './Pictures';
+function OurFleet() {
+
+  return (
+    <>
+       <Navbar/>
+       <Hero/>
+       <Pictures/>
+       <Footer/>
+     
+    
+    </>
+  )
+}
+
+export default OurFleet
+</file>
+
+<file path="src/Pages/Services/CargoTransport/MainSecond.jsx">
+function MainSecond() {
+
+    return (
+        <>
+
+                                            {/* Section 2 */}
+            <p className="ml-12 text-4xl font-bold text-indigo-900 mb-4">HOW IT WORKS</p>
+
+            <div className=" mb-8  mx-10 grid md:grid-cols-4">
+                <div data-aos="fade-up" className="  p-3 shadow-lg ml-4 mt-3 border border-stone-200 rounded-b-2xl">
+                    <p className="text-indigo-700 font-semibold pl-1"><i className="fa-solid fa-message scale-[1.5]"></i></p>
+                    <p className="text-indigo-700 pt-4">Step 01</p>
+                    <p className="text-indigo-700 font-bold text-2xl pt-6">REQUEST A QUOTE</p>
+                </div>
+
+                <div data-aos="fade-up" className="  p-3 shadow-lg ml-4 mt-3 border border-stone-200 rounded-b-2xl">
+                    <p className="text-indigo-700 font-semibold pl-1"><i className="fa-solid fa-calendar-minus scale-[1.5]"></i></p>
+                    <p className="text-indigo-700 pt-4 ">Step 02</p>
+                    <p className="text-indigo-700 font-bold text-2xl pt-6"> SCHEDULE A DELIVERY</p>
+                </div>
+
+                <div data-aos="fade-up" className="  p-3 shadow-lg ml-4 mt-3 border border-stone-200 rounded-b-2xl">
+                    <p className="text-indigo-700 font-semibold pl-1"><i className="fa-solid fa-car-side scale-[1.5]"></i></p>
+                    <p className="text-indigo-700 pt-4">Step 03</p>
+                    <p className="text-indigo-700 font-bold text-2xl pt-6">TRACK YOUR CARGO</p>
+                </div>
+
+                <div data-aos="fade-up" className="  p-3 ml-4 mt-3 border border-stone-200 rounded-b-2xl shadow-lg">
+                    <p className="text-indigo-700 font-semibold pl-1"><i className="fa-solid fa-location-dot scale-[1.5]"></i></p>
+                    <p className="text-indigo-700 pt-4">Step 04</p>
+                    <p className="text-indigo-700 font-bold text-2xl pt-6">DELIVERY</p>
+                </div>  </div>
+
+
+
+        </>
+    )
+}
+
+export default MainSecond
+</file>
+
+<file path="src/Pages/Services/Material/Main.jsx">
+function Main() {
+
+    return (
+        <>
+                                                 {/* Paragraph */}
+            <div className="flex items-center justify-center text-indigo-900 mx-8 my-12 font-medium ">
+                <p className=" text-center">We supply a wide range of construction materials for residential and commercial construction jobs, we are the leading supplier of construction materials like washed sand,
+                    Aggregates of different types, varieties of bases, Sweet Sand, different sizes of boulders and Natural Rocks.</p>
+            </div>
+
+
+
+
+
+
+
+
+            <div className=" mx-8 mb-16 pb-12 grid sm:grid-cols-2 md:grid-cols-3 sm:gap-4 md:gap-4">
+
+
+
+
+                                                        {/* 1st Column */}
+                <div className="   p-4 mt-4 bg-stone-200 shadow-xl shadow-sky-100">
+                    <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
+
+                    <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/agg1.jpg" alt="" /></div>
+
+                    <div className="mt-8 ml-4">
+                        <div className="flex"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Road Base</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Sub Base</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Aggregate 3/4 Full Crushed</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Aggregate 3/8 Full Crushed</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Aggregate 3/16 Full Crushed</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Aggregate 3/4 Full Natural</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Aggregate 3/8 Full Natural</p></div>
+                    </div>
+
+                    <div className=" mt-4">
+                        <div className=" flex items-center justify-center ">
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Aggregate/image11.png" alt="" /></div>
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Aggregate/image22.png" alt="" /></div>
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Aggregate/image33.png" alt="" /></div>
+                        </div>
+
+                        <div className=" flex items-center justify-center  ">
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Aggregate/image44.png" alt="" /></div>
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Aggregate/image55.png" alt="" /></div>
+                        </div>        </div>    </div>
+
+
+
+
+
+
+
+
+
+                                                        {/* 2nd Column */}
+                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100  mt-4">
+                    <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
+
+                    <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/Boult.jpg" alt="" /></div>
+
+                    <div className="mt-8 ml-4">
+                        <div className="flex"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Boulder 2 to 4 inches</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Boulder 6 to 8 inches</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Boulder 12 to 20 inches</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Natural Rock (1Kg to 500Kgs)</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Natural Rock (500Kgs to 1,000Kgs)</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Natural Rock (2 tons to 5 tons)</p></div>
+                    </div>
+
+                    <div className=" mt-4">
+                        <div className=" flex items-center justify-center ">
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image11.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image22.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image33.png" alt="" /></div>
+                        </div>
+
+                        <div className=" flex items-center justify-center  ">
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image44.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image55.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Boulders/image66.png" alt="" /></div>
+                        </div>        </div>    </div>
+
+
+
+
+
+
+
+
+                                                       
+                                                          {/* 3rd Column */}
+                <div className="   p-4  bg-stone-200 shadow-xl shadow-sky-100 mt-4">
+                    <div className="flex justify-center items-center"> <p className="text-2xl font-bold text-indigo-900  ">Aggregate & Crushed Stone</p><br /> </div>
+
+                    <div className="h-80 "><img className="w-full h-full p-4" src="images/Material/Sand.jpg" alt="" /></div>
+
+                    <div className="mt-8 ml-4">
+                        <div className="flex"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">White Washed Sand</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Black Washed Sand</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Black Washed Ordinary</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Back Filling Sand</p></div>
+                        <div className="flex mt-4"><i className="fa-solid fa-trowel text-indigo-900 scale-[1.3] "></i><p className="ml-2 font-medium text-sm">Sweet Sand</p></div>
+                    </div>
+
+                    <div className=" mt-4">
+                        <div className=" flex items-center justify-center  ">
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Sand/image11.png" alt="" /></div>
+                             <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Sand/image22.png" alt="" /></div>
+                        </div>
+
+                        <div className=" flex items-center justify-center ">
+                            <div className=" h-28 w-28 "><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Sand/image33.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Sand/image44.png" alt="" /></div>
+                            <div className=" h-28 w-28"><img className="w-full h-full p-1 border-xl" src="images/ConstructionMaterial/Sand/image55.png" alt="" /></div>
+                        </div>
+                    </div>    </div>
+
+
+
+
+
+
+
+            </div>
+
+        </>
+    )
+}
+
+export default Main
+</file>
+
+<file path="package.json">
+{
+  "name": "registration",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "dom": "^0.0.3",
+    "framer-motion": "^12.12.1",
+    "lucide-react": "^0.511.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.6.0",
+    "router": "^2.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.3",
+    "vite": "^5.0.8"
+  }
+}
+</file>
+
+<file path="src/App.jsx">
+import "./index.css";
+ import { Routes, Route } from "react-router-dom";
+
+
+// import Footer from './Components/Footer/Footer';
+// import Navbar from './Components/Navbar/Navbar';
+
+
+import Home from "./Pages/Home/Home";
+import About from "./Pages/About/About";
+import Contact from "./Pages/Contact/Contact";
+import OurFleet from "./Pages/Ourfleet/Ourfleet";
+
+                  //  Services
+import CargoTransport from "./Pages/Services/CargoTransport/CargoTransport";
+import Construction from "./Pages/Services/Construction/Construction";
+import Material from "./Pages/Services/Material/Material";
+import WaterTransport from "./Pages/Services/WaterTransport/WaterTransport";
+
+function App() {
+
+  return (
+    <>
+       {/* <Navbar/>
+
+
+      <h1 className="text-3xl text-center text-red-700"
+      >Welcome to Vite with TailwindCSS and Reacnnjtnkjk1231</h1>
+
+
+    <Footer/> */}
+
+
+
+    <Routes>
+
+      <Route path="/" element={<Home/>}/>
+      <Route path="/home" element={<Home/>}/>
+      <Route path="/about" element={<About/>}/>
+      <Route path="/Contact" element={<Contact/>}/>
+      <Route path="/ourfleet" element={<OurFleet/>}/>
+
+
+              {/* Services */}
+      <Route path="/cargotransport" element={<CargoTransport/>}/>
+      <Route path="/Construction" element={<Construction/>}/>
+      <Route path="/Material" element={<Material/>}/>
+      <Route path="/WaterTransport" element={<WaterTransport/>}/>
+
+    </Routes>
+    </>
+  )
+}
+
+export default App
+</file>
+
+<file path="src/Components/Navbar/Mobile.jsx">
+// function Mobile() {
+//     return (
+//         <>
+
+
+
+//             <div className="lg:hidden  block  h-12 w-full flex  items-center justify-between sticky top-0 z-[1000] rounded-b-2xl ">
+
+
+//                 <div className=" h-10 w-60 "><img className="w-full h-full " src="images/Logo/dynamicLeo.png" alt="" /></div>
+
+
+
+
+
+//                 <div className="flex  ">
+
+//                     <div className="relative group/1  flex items-center justify-center    p-4 lg:invisible">
+
+//                         <i className="fa-solid fa-bars scale-[1.5] text-blue-700  "></i>
+
+//                         <div className=" absolute invisible group-hover/1:visible mt-[245px]  w-48 bg-white shadow-lg rounded-md shadow-lg bg-white mr-20">
+//                             <a className="block  px-6 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="/Home">Home</a>
+
+
+//                             <div className="  group  flex items-center justify-center ">
+
+//                                 <a className="   block  py-2 hover:bg-gray-100 transition-colors pr-24
+//                             text-gray-600 " href="/WaterTransport"><i className="fa-solid fa-arrow-left pt-1 pr-2"></i>Services</a>
+
+//                                 <div className="absolute invisible  group-hover:visible mt-[220px]  w-48 bg-white shadow-lg rounded-md shadow-lg bg-white mr-40">
+//                                     <a className="block px-6 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="/Material">Construction Material</a>
+//                                     <a className="block px-6 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="/WaterTransport">Water Transport</a>
+//                                     <a className="block px-6 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="Construction">Construction & Demolish Water</a>
+//                                     <a className="block px-6 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="CargoTransport">Cargo By Light & Heavy Trucks</a>
+//                                 </div>     </div>
+
+
+
+
+
+
+
+//                             <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="Ourfleet">Our Fleet</a>
+//                             <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="About">About Us</a>
+//                             <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="Contact">Contact Us</a>
+//                         </div>
+
+//                     </div>  </div>  </div>
+
+
+
+
+
+
+//         </>
+//     )
+// }
+
+// export default Mobile
+
+
+
+
+
+
+
+import { useState, useEffect } from "react";
+
+function Mobile() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [activePage, setActivePage] = useState("");
+  
+  // Set active page based on current URL
+  useEffect(() => {
+    const path = window.location.pathname;
+    const page = path.split("/")[1] || "Home";
+    setActivePage(page);
+  }, []);
+  
+  // Toggle main menu
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+    if (menuOpen) {
+      setServicesOpen(false);
+    }
+  };
+  
+  // Toggle services submenu
+  const toggleServices = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setServicesOpen(!servicesOpen);
+  };
+  
+  // Check if a link is active
+  const isActive = (page) => {
+    return activePage === page ? "bg-blue-50 font-medium text-blue-700" : "";
+  };
+
+  return (
+    <>
+      <div className="lg:hidden block h-12 w-full flex items-center justify-between sticky top-0 z-[1000] bg-white shadow-md rounded-b-2xl">
+        {/* Logo */}
+        <div className="h-10 w-60">
+          <img className="w-full h-full pl-4" src="images/Logo/dynamicLeo.png" alt="" />
+        </div>
+
+        {/* Menu Button */}
+        <button 
+          onClick={toggleMenu}
+          className="relative flex items-center justify-center p-4"
+        >
+          <i className={`fa-solid ${menuOpen ? 'fa-times' : 'fa-bars'} scale-[1.5] text-blue-700`}></i>
+        </button>
+      </div>
+
+      {/* Main Menu - Shown/Hidden based on state */}
+      {menuOpen && (
+        <div className="lg:hidden absolute right-0 top-12 w-60 bg-white shadow-lg rounded-md z-50">
+          <a 
+            className={`block px-6 py-3 hover:bg-gray-100 transition-colors text-gray-600 border-b ${isActive("Home")}`} 
+            href="/Home"
+          >
+            Home
+          </a>
+
+          {/* Services with dropdown */}
+          <div className="border-b">
+            <button 
+              onClick={toggleServices}
+              className={`w-full text-left flex items-center justify-between px-6 py-3 hover:bg-gray-100 transition-colors text-gray-600 ${activePage.includes("Transport") || activePage === "Material" || activePage === "Construction" || activePage === "CargoTransport" ? "bg-blue-50 font-medium text-blue-700" : ""}`}
+            >
+              Services
+              <i className={`fa-solid ${servicesOpen ? 'fa-chevron-up' : 'fa-chevron-down'} text-gray-500`}></i>
+            </button>
+
+            {/* Dropdown menu for Services */}
+            {servicesOpen && (
+              <div className="bg-gray-50 py-1">
+                <a 
+                  className={`block pl-10 pr-6 py-2 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("Material")}`} 
+                  href="/Material"
+                >
+                  Construction Material
+                </a>
+                <a 
+                  className={`block pl-10 pr-6 py-2 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("WaterTransport")}`} 
+                  href="/WaterTransport"
+                >
+                  Water Transport
+                </a>
+                <a 
+                  className={`block pl-10 pr-6 py-2 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("Construction")}`} 
+                  href="/Construction"
+                >
+                  Construction & Demolish Water
+                </a>
+                <a 
+                  className={`block pl-10 pr-6 py-2 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("CargoTransport")}`} 
+                  href="/CargoTransport"
+                >
+                  Cargo By Light & Heavy Trucks
+                </a>
+              </div>
+            )}
+          </div>
+
+          <a 
+            className={`block px-6 py-3 hover:bg-gray-100 transition-colors text-gray-600 border-b ${isActive("Ourfleet")}`} 
+            href="/Ourfleet"
+          >
+            Our Fleet
+          </a>
+          <a 
+            className={`block px-6 py-3 hover:bg-gray-100 transition-colors text-gray-600 border-b ${isActive("About")}`} 
+            href="/About"
+          >
+            About Us
+          </a>
+          <a 
+            className={`block px-6 py-3 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("Contact")}`} 
+            href="/Contact"
+          >
+            Contact Us
+          </a>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default Mobile;
+</file>
+
+<file path="src/Components/Navbar/Navbar.jsx">
+import Mobile from './Mobile'
+import Desktop from './Desktop'
+import WhatsApp from './Whatsapp'
+
+function Navbar() {
+  return (
+    <>
+      <Mobile />
+      <Desktop />
+      <WhatsApp />
+    </>
+  )
+}
+
+export default Navbar
+</file>
+
+<file path="src/main.jsx">
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+import { BrowserRouter } from "react-router-dom";
+// import { HelmetProvider } from "react-helmet-async";
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+ <React.StrictMode>
+     {/* <HelmetProvider> */}
+      <BrowserRouter> 
+        <App />
+      </BrowserRouter>
+    {/* </HelmetProvider>  */}
+  </React.StrictMode>
+)
+</file>
+
+<file path="src/Pages/About/About.jsx">
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Hero from './Hero';
+import Main from './Main';
+
+function AboutUs() {
+
+
+  return (
+    <div className="">
+    <Navbar/>
+     <Hero />
+     <Main/>
+     <Footer/>
+
+    </div>
+  )
+}
+
+export default AboutUs
+</file>
+
+<file path="src/Pages/Contact/Contact.jsx">
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Hero from './Hero';
+import ContactForm from './ContactForm';
+function Contact() {
+
+  return (
+    <>
+      
+     <Navbar/>
+     <Hero/>
+     <ContactForm/>
+     <Footer/>
+    
+    </>
+  )
+}
+
+export default Contact
+</file>
+
+<file path="src/Pages/Services/CargoTransport/Slider.jsx">
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const testimonials = [
+  {
+    name: "John",
+    title: "Operations Director",
+    quote: "Outstanding reliability and efficiency!",
+    text: "Their heavy-duty fleet solutions transformed our supply chain operations. The real-time GPS tracking and preventive maintenance programs .",
+  },
+  {
+    name: "Jane",
+    title: "Logistics Manager",
+    quote: "Truly revolutionary!",
+    text: "Thanks to their advanced tracking tools, our deliveries are always on schedule. I highly recommend their services to any logistics firm.",
+  },
+  {
+    name: "Michael",
+    title: "Fleet Supervisor",
+    quote: "Unmatched service quality!",
+    text: "Their support team is top-notch. They always respond promptly and help us maintain peak efficiency in fleet operations.",
+  },
+];
+
+function Practice1() {
+  const [index, setIndex] = useState(0);
+
+  const nextTestimonial = () => {
+    setIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setIndex((prevIndex) =>
+      prevIndex === 0 ? testimonials.length - 1 : prevIndex - 1
+    );
+  };
+
+  const testimonial = testimonials[index];
+
+  return (
+    <div className="my-20 px-4 sm:px-10 md:px-40 py-10 border border-gray-200 shadow-lg rounded-2xl bg-white">
+      <h2 className="text-4xl font-bold text-center text-indigo-700 mb-10">
+        What Our Clients Say About Us
+      </h2>
+
+      <div className="relative max-w-3xl mx-auto">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.5 }}
+            className="text-center px-6"
+          >
+            <p className="text-xl font-bold text-indigo-700">{testimonial.name}</p>
+            <p className="text-indigo-500 mb-4">{testimonial.title}</p>
+            <h3 className="text-2xl font-semibold text-indigo-700 mb-2">
+              {testimonial.quote}
+            </h3>
+            <p className="text-indigo-600 text-lg">{testimonial.text}</p>
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-10 flex justify-center space-x-8">
+          <button
+            onClick={prevTestimonial}
+            className="text-indigo-600 hover:text-indigo-800 transition"
+          >
+            <ChevronLeft size={40} />
+          </button>
+          <button
+            onClick={nextTestimonial}
+            className="text-indigo-600 hover:text-indigo-800 transition"
+          >
+            <ChevronRight size={40} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Practice1;
+</file>
+
+<file path="src/Pages/Services/Construction/Construction.jsx">
+import Navbar from '../../../Components/Navbar/Navbar';
+import Footer from '../../../Components/Footer/Footer';
+import Hero from './Hero';
+import MainFirst from './MainFirst';
+import MainSecond from './MainSecond';
+function Construction() {
+
+  return (
+    <>
+     <Navbar/>
+     <Hero/>
+     <MainFirst/>
+     <MainSecond/>
+     <Footer/>
+    
+    </>
+  )
+}
+
+export default Construction
+</file>
+
+<file path="src/Pages/Services/Material/Material.jsx">
+import Navbar from '../../../Components/Navbar/Navbar';
+import Footer from '../../../Components/Footer/Footer';
+import Hero from './Hero';
+import Main from './Main';
+function Material() {
+
+  return (
+    <>
+      
+     <Navbar/>
+     <Hero />
+     <Main/>
+     <Footer/>
+     
+    
+    </>
+  )
+}
+
+export default Material
+</file>
+
+<file path="src/Pages/Services/WaterTransport/WaterTransport.jsx">
+import Navbar from '../../../Components/Navbar/Navbar';
+import Footer from '../../../Components/Footer/Footer';
+import Hero from './Hero';
+import MainFirst from './MainFirst';
+import MainSecond from './MainSecond';
+function WaterTransport() {
+
+  return (
+    <>
+
+
+
+     <Navbar/>
+     <Hero/>
+     <MainFirst/>
+     <MainSecond/>
+     <Footer/>
+     
+     
+    
+    </>
+  )
+}
+
+export default WaterTransport
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <title>Dynamic Leo Transport Services</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({duration:1000});
+</script>
+  </body>
+</html>
+</file>
+
+<file path="src/Components/Footer/Footer.jsx">
+function Footer() {
+    return (
+
+        <div className=" mt-8 w-[100%]">
+
+
+                                                         {/* Logo & Tagline Section */}
+
+            <div className=" flex flex-col justify-center items-center container mx-auto md:flex md:flex-row md:justify-between md:px-4">
+                <div ><img className="h-20 w-60" src="images/Logo/dynamicLeo.png" alt="" /></div>
+                <div className=" mt-4 "><p className="text-sky-700 text-2xl font-semibold md:text-4xl font-bold">MAKE THE LEAP</p></div>
+            </div>
+
+
+
+
+                                                            {/* Quick Links */}
+
+            <div className="   grid sm:grid-cols-2 md:grid-cols-3">
+
+                <div className="flex flex-col mt-10 pl-4 pt-6">
+                    <p className="ml-8 font-semibold " >Quick Links</p>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Home</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Our Fleet</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">About Us</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Contact Us</a>
+                </div>
+
+                <div className="flex flex-col mt-10 pl-4 pt-6">
+                    <p className="ml-8 font-semibold " >Services</p>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Construction Material</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Water Transport</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Construction & Demolition Waste</a>
+                    <a className="ml-8 mt-4 text-zinc-700 hover:text-amber-300 hover:translate-x-2 duration-300" href="a">Cargo by Light & Heavy Trucks</a>
+                </div>
+
+                <div className="flex flex-col mt-10 pl-4 pt-6 ml-8">
+                    <p className=" font-semibold  " >Contact Us</p>
+                    <p className=" text-zinc-700 mt-4 " > <i className="fa-solid fa-envelope mr-2 text-amber-300"></i>info@dynamicleotransport.ae</p>
+                    <p className=" mt-4 text-zinc-700 " ><i className="fa-solid fa-phone text-amber-300"></i> +971 521205514</p>
+                    <p className=" mt-4 text-zinc-700 " ><i className="fa-solid fa-location-dot mr-1 text-amber-300"></i> Office No 06, Level 26th, Aspin Commercial <br /> <p className="ml-5">Tower,</p>
+                        <p className="ml-5 mt-[-5]">Sheikh Zayed Road, Dubai, UAE</p></p>
+
+                </div>               </div>
+
+
+
+
+
+                                                            {/* Straight Line */}
+                            <div className="border border-zinc-200 w-[90%] ml-16 pl-4 mt-12  "></div>
+
+
+
+
+
+
+                                                          {/* Footer bottom */}
+            <div className="flex flex-col justify-center items-center md:flex-row md:justify-between mx-8 px-8">
+
+                <div className=" flex h-16 items-center ">
+                    <div className=" p-4"> <i className="fa-brands fa-facebook scale-150  hover:scale-[1.8] duration-300 text-amber-300"></i></div>
+                    <div className=" p-3">  <i className="fa-brands fa-linkedin scale-150  hover:scale-[1.8] duration-300 text-amber-300"></i></div>
+                    <div className=" p-3">  <i className="fa-brands fa-instagram scale-150  hover:scale-[1.8] duration-300 text-amber-300"></i></div>
+                </div>
+
+                <div className="text-xs text-gray-600">
+                    <p>© 2025 Dynamic Leo. ALL RIGHTS RESERVED</p>
+                </div>    </div>
+
+
+
+
+
+
+        </div>
+
+    )
+}
+
+export default Footer
+</file>
+
+<file path="src/Pages/Home/Home.jsx">
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Hero from './Hero';
+import MainFirst from './MainFirst';
+import MainSecond from './MainSecond';
+import MainThired from './MainThired';
+import MainFourth from './MainFourth';
+import MainFifth from './MainFifth';
+import MainSixth from './MainSixth';
+
+function Home() {
+
+  return (
+    <>
+   <Navbar/>
+   <Hero/>
+   <MainFirst/> 
+   <MainSecond/>
+   <MainThired/>
+   <MainFourth/>
+   <MainFifth/>
+   <MainSixth/>    
+  <Footer/>
+  
+    </>
+  )
+}
+
+export default Home
+</file>
+
+<file path="src/Pages/Services/CargoTransport/CargoTransport.jsx">
+import Navbar from '../../../Components/Navbar/Navbar';
+import Footer from '../../../Components/Footer/Footer';
+import Hero from './Hero';
+import MainFirst from './MainFirst';
+import MainSecond from './MainSecond';
+import Slider from './Slider';
+function CargoTransport() {
+
+  return (
+    <>
+       
+     <Navbar/>
+     <Hero/>
+     <MainFirst/>
+     <MainSecond/>
+     <Slider/>
+     <Footer/>
+      
+    
+    </>
+  )
+}
+
+export default CargoTransport
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+//   content: [
+//     "./index.html",
+//     "./src/**/*.{js,ts,jsx,tsx}"
+//   ],
+//   theme: {
+//     extend: {
+
+      
+//     },
+//   },
+//   plugins: [],
+// }
+
+
+
+
+
+// /** @type {import('tailwindcss').Config} */
+// module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {
+
+      textShadow: {
+        'blue': '5px 5px 10px blue',
+      },
+
+      keyframes: {
+        'tilt-shaking': {
+          '0%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(5deg)' },
+          '50%': { transform: 'rotate(0deg)' },
+          '75%': { transform: 'rotate(-5deg)' },
+          '100%': { transform: 'rotate(0deg)' },
+        },
+
+       
+        'colorAnimate': {
+          '0%': { borderColor: 'salmon' },
+          '25%': { borderColor: '#e18ce1' },
+          '50%': { borderColor: 'paleturquoise' },
+          '75%': { borderColor: 'green' },
+          '100%': { borderColor: 'yellow' }
+        },
+
+
+        scroll: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+
+
+      },
+      animation: {
+        'tilt-shaking': 'tilt-shaking 0.8s infinite',
+        'color-animate': 'colorAnimate 5s ease-in 1s infinite',
+        scroll: 'scroll 10s linear infinite',
+      
+      }
+
+
+    },
+  },
+  
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {
+        '.text-shadow-blue': {
+          textShadow: '5px 5px 10px blue',
+        },
+      }
+      addUtilities(newUtilities)
+    }
+  ],
+}
+</file>
+
+<file path="src/Components/Navbar/Desktop.jsx">
+// function Desktop() {
+//     return (
+//         <>
+
+//             <div className=" hidden lg:block  h-12 w-full lg:flex  items-center lg:justify-between sticky top-0 z-[1000] rounded-b-2xl bg-gradient-to-r from-white  backdrop-blur">
+
+
+//                 <div className=" h-10 w-60 "><img className="w-full h-full " src="images/Logo/dynamicLeo.png" alt="" /></div>
+
+
+
+
+
+//                 <div className="lg:flex lg:justify-start ">
+
+//                     <div className="  lg:flex   lg:items-center hidden  lg:w-[700px]">
+//                         <a className="cursor-pointer lg:ml-20   text-zinc-1000 lg:text-xs xl:text-base xl:text-zinc-700 " href="/Home">Home</a>
+
+
+//                         <div className="relative group   flex items-center justify-center ">
+
+//                             <a className=" flex lg:ml-8 xl:ml-6 lg:text-xs text-zinc-1000 xl:text-base xl:text-zinc-700  " href="/Home">Services<i className="fa-solid fa-caret-down pt-1 pl-1"></i></a>
+
+//                             <div className="absolute invisible group-hover:visible mt-[230px]  w-48 bg-white shadow-lg rounded-md shadow-lg bg-white">
+//                                 <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="/Material">Construction Material</a>
+//                                 <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="/WaterTransport">Water Transport</a>
+//                                 <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="Construction">Construction & Demolish Water</a>
+//                                 <a className="block px-4 py-2 hover:bg-gray-100 transition-colors
+//                             text-gray-600" href="CargoTransport">Cargo By Light & Heavy Trucks</a>
+//                             </div> </div>
+
+
+//                         <a className="lg:ml-8 xl:ml-6 text-zinc-1000 lg:text-xs xl:text-base xl:text-zinc-700 " href="OurFleet">OurFleet</a>
+//                         <a className="lg:ml-8 xl:ml-6 text-zinc-1000 lg:text-xs xl:text-base xl:text-zinc-700 " href="About">About Us</a>
+//                         <a className="lg:ml-8 xl:ml-6 text-zinc-1000 lg:text-xs xl:text-base xl:text-zinc-700 " href="Contact">Contact Us</a>
+//                         <a className="ml-8 text-zinc-1000 bg-amber-500 py-2 px-4 rounded-sm font-semibold " href="Get and Quote">Get a Quote</a>
+//                     </div>
+
+//                 </div> </div>
+
+
+
+
+//         </>
+//     )
+// }
+
+// export default Desktop
+
+
+
+
+
+
+import { useEffect, useState } from "react";
+
+function Desktop() {
+    const [activePage, setActivePage] = useState("");
+
+    // Set active page based on current URL when component mounts
+    useEffect(() => {
+        const path = window.location.pathname;
+        const page = path.split("/")[1] || "Home";
+        setActivePage(page);
+    }, []);
+
+    // Check if a link is active
+    const isActive = (page) => {
+        if (page === activePage) {
+            return " text-amber-500 font-bold rounded-md px-3"; // Button-like appearance when active
+        }
+        return "";
+    };
+
+    // Check if any service page is active
+    const isServiceActive = () => {
+        const servicePages = ["Material", "WaterTransport", "Construction", "CargoTransport"];
+        return servicePages.includes(activePage) ? "text-amber-500  font-bold rounded-md px-3" : "";
+    };
+
+    return (
+        <>
+            <div className="hidden lg:block h-12 w-full lg:flex items-center lg:justify-between sticky top-0 z-[1000] rounded-b-2xl bg-gradient-to-r from-white backdrop-blur bg-white/90 shadow-sm">
+                {/* Logo */}
+                <div className="h-10 w-60 ml-4">
+                    <img className="w-full h-full pl-4" src="images/Logo/dynamicLeo.png" alt="Logo" />
+                </div>
+
+                {/* Navigation Links */}
+                <div className="lg:flex lg:justify-start">
+                    <div className="lg:flex lg:items-center hidden lg:w-[700px]">
+                        {/* Home Link */}
+                        <a 
+                            className={`cursor-pointer lg:ml-20 lg:text-xs xl:text-base xl:text-zinc-700  py-3 transition-colors ${isActive("Home")}`} 
+                            href="/Home"
+                        >
+                            Home
+                        </a>
+
+                        {/* Services Dropdown */}
+                        <div className="relative group flex items-center justify-center">
+                            <a 
+                                className={`flex lg:ml-8 xl:ml-6 lg:text-xs xl:text-base xl:text-zinc-700  py-3 transition-colors ${isServiceActive()}`} 
+                                href="#"
+                            >
+                                Services             
+                                
+
+                                <i className={`fa-solid fa-caret-down pt-1 pl-1 ${isServiceActive() ? "text-black" : ""}`}></i>
+                            </a>
+
+                            {/* Services Dropdown Menu */}
+                            <div className="absolute invisible group-hover:visible top-full w-60 bg-white shadow-lg rounded-md">
+                                <a 
+                                    className={`block px-4 py-3 hover:bg-gray-100 transition-colors text-gray-600 ${isActive("Material")}`} 
+                                    href="/Material"
+                                >
+                                    Construction Material
+                                </a>
+                                <a 
+                                    className={`block px-4 py-3  transition-colors text-gray-600 ${isActive("WaterTransport")}`} 
+                                    href="/WaterTransport"
+                                >
+                                    Water Transport
+                                </a>
+                                <a 
+                                    className={`block px-4 py-3  transition-colors text-gray-600 ${isActive("Construction")}`} 
+                                    href="/Construction"
+                                >
+                                    Construction & Demolish Water
+                                </a>
+                                <a 
+                                    className={`block px-4 py-3  transition-colors text-gray-600 ${isActive("CargoTransport")}`} 
+                                    href="/CargoTransport"
+                                >
+                                    Cargo By Light & Heavy Trucks
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Other Navigation Links */}
+                        <a 
+                            className={`lg:ml-8 xl:ml-6 lg:text-xs xl:text-base xl:text-zinc-700 h py-3 transition-colors ${isActive("OurFleet")}`} 
+                            href="/OurFleet"
+                        >
+                            Our Fleet
+                        </a>
+                        <a 
+                            className={`lg:ml-8 xl:ml-6 lg:text-xs xl:text-base xl:text-zinc-700  py-3 transition-colors ${isActive("About")}`} 
+                            href="/About"
+                        >
+                            About Us
+                        </a>
+                        <a 
+                            className={`lg:ml-8 xl:ml-6 lg:text-xs xl:text-base xl:text-zinc-700  py-3 transition-colors ${isActive("Contact")}`} 
+                            href="/Contact"
+                        >
+                            Contact Us
+                        </a>
+                        
+                        {/* Call to Action Button */}
+                        <a 
+                            className={`ml-8 text-white ${activePage === "Quote" ? "bg-amber-600 font-bold" : "bg-amber-500 font-semibold"} hover:bg-amber-600 py-2 px-4 rounded-md transition-colors`} 
+                            href="/Quote"
+                        >
+                            Get a Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default Desktop;
+</file>
+
+</files>
