@@ -47,7 +47,10 @@ package.json
 postcss.config.js
 public/vite.svg
 README.md
+src/api/apiClient.js
 src/api/auth.js
+src/api/proposalApi.js
+src/api/tenderApi.js
 src/App.css
 src/App.jsx
 src/assets/react.svg
@@ -57,14 +60,774 @@ src/index.css
 src/main.jsx
 src/Pages/Auth/SignIn.jsx
 src/Pages/Auth/SignUp.jsx
+src/Pages/Client/CreateTender.jsx
+src/Pages/Client/MyTenders.jsx
+src/Pages/Client/TenderManager.jsx
 src/Pages/Dashboard.jsx
-src/Pages/test/test.jsx
 tailwind.config.js
 vite.config.js
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
+
+<file path="src/api/apiClient.js">
+// src/api/apiClient.js
+const BASE_URL = "http://localhost:7000/api";
+
+/**
+ * Handles authenticated fetch requests.
+ */
+async function authenticatedFetch(endpoint, options = {}) {
+    const token = localStorage.getItem('token'); // Retrieve token stored during sign-in
+
+    const defaultHeaders = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        defaultHeaders['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+        ...options,
+        headers: {
+            ...defaultHeaders,
+            ...options.headers,
+        },
+    });
+
+    if (!response.ok) {
+        // Attempt to parse error message from response body
+        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        throw new Error(errorData.message || `API Error (${response.status})`);
+    }
+
+    // Handle No Content (204) responses
+    if (response.status === 204) {
+        return null;
+    }
+    
+    return response.json();
+}
+
+export default authenticatedFetch;
+</file>
+
+<file path="src/api/proposalApi.js">
+// src/api/proposalApi.js
+import authenticatedFetch from './apiClient';
+
+// 2a) View Proposals for a specific Tender
+export const getProposalsByTender = (tenderId) => {
+    return authenticatedFetch(`/proposals/tender/${tenderId}`);
+};
+
+// 2b, 2c) Update Proposal Status (Shortlist, Reject, Award)
+// Status can be 'shortlisted', 'rejected', or 'awarded'
+export const updateProposalStatus = (proposalId, status) => {
+    return authenticatedFetch(`/proposals/${proposalId}/status`, {
+        method: 'PATCH', 
+        body: JSON.stringify({ status }),
+    });
+};
+</file>
+
+<file path="src/api/tenderApi.js">
+// src/api/tenderApi.js
+import authenticatedFetch from './apiClient';
+
+// 1a) Create Tender (Draft/Save)
+export const createTender = (tenderData) => {
+    return authenticatedFetch('/tenders', {
+        method: 'POST',
+        body: JSON.stringify(tenderData),
+    });
+};
+
+// 1a) Publish Tender
+export const publishTender = (tenderId) => {
+    return authenticatedFetch(`/tenders/${tenderId}/publish`, {
+        method: 'POST',
+    });
+};
+
+// 1b) View Client Tenders (Dashboard)
+export const getMyTenders = () => {
+    return authenticatedFetch('/tenders/my-tenders');
+};
+
+// Fetch single tender (Useful for editing forms)
+export const getTenderById = (tenderId) => {
+    return authenticatedFetch(`/tenders/${tenderId}`);
+};
+
+// 1c) Edit Tender (Drafted or Active)
+export const updateTender = (tenderId, updateData) => {
+    return authenticatedFetch(`/tenders/${tenderId}`, {
+        method: 'PUT',
+        body: JSON.stringify(updateData),
+    });
+};
+
+// 1d) Extend Deadline
+export const extendTenderDeadline = (tenderId, newDeadline) => {
+    return authenticatedFetch(`/tenders/${tenderId}/extend-deadline`, {
+        method: 'PATCH',
+        body: JSON.stringify({ new_deadline: newDeadline }),
+    });
+};
+
+// 1e) Close Tender
+export const closeTender = (tenderId) => {
+    return authenticatedFetch(`/tenders/${tenderId}/close`, {
+        method: 'POST', 
+    });
+};
+
+// 1f) Archive Tender
+export const archiveTender = (tenderId) => {
+    return authenticatedFetch(`/tenders/${tenderId}/archive`, {
+        method: 'POST',
+    });
+};
+
+// 1g) Delete Tender
+export const deleteTender = (tenderId) => {
+    return authenticatedFetch(`/tenders/${tenderId}`, {
+        method: 'DELETE',
+    });
+};
+</file>
+
+<file path="src/Pages/Client/CreateTender.jsx">
+// src/Pages/Client/CreateTender.jsx
+import  { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createTender, publishTender } from '../../api/tenderApi';
+
+const initialTenderState = {
+    title: '',
+    description: '',
+    category: '',
+    budget_range: '',
+    deadline: '',
+    location: '',
+    contact_info: '',
+    // client_id is usually handled by the backend from the authenticated token
+};
+
+function CreateTender() {
+    const [formData, setFormData] = useState(initialTenderState);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (status) => {
+        setLoading(true);
+        setError(null);
+
+        // Basic validation check
+        if (!formData.title || !formData.deadline) {
+            setError("Title and Deadline are required fields.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            // 1a: Create/Save Tender (status will default to 'draft' or 'active' based on the status variable)
+            const draftPayload = {
+                ...formData,
+                // If publishing immediately, set status to active for the creation call
+                status: status === 'publish' ? 'active' : 'draft', 
+                // Note: Attachments handling is skipped for simplicity but should be managed here.
+                attachments: [],
+            };
+            
+            const newTender = await createTender(draftPayload);
+
+            if (status === 'publish') {
+                // 1a: Publish the tender
+                await publishTender(newTender.id);
+                alert('Tender published successfully!');
+            } else {
+                 alert('Tender saved as draft successfully!');
+            }
+
+            navigate('/client/tenders'); // Redirect to the client's tender list
+        } catch (err) {
+            setError(err.message || 'Failed to process tender.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="p-8 max-w-3xl mx-auto">
+            <h1 className="text-3xl font-bold mb-6 text-indigo-600">Create New Tender</h1>
+            
+            {error && <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">{error}</div>}
+
+            <form className="space-y-4">
+                {/* Title */}
+                <input 
+                    type="text" 
+                    name="title" 
+                    placeholder="Tender Title"
+                    value={formData.title} 
+                    onChange={handleChange} 
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                    required
+                />
+                
+                {/* Description */}
+                <textarea 
+                    name="description" 
+                    placeholder="Detailed Description"
+                    value={formData.description} 
+                    onChange={handleChange} 
+                    rows="4"
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                />
+
+                {/* Category & Budget */}
+                <div className="grid grid-cols-2 gap-4">
+                    <input 
+                        type="text" 
+                        name="category" 
+                        placeholder="Category (e.g., Web Development)"
+                        value={formData.category} 
+                        onChange={handleChange} 
+                        className="p-3 border border-gray-300 rounded-md"
+                    />
+                    <input 
+                        type="text" 
+                        name="budget_range" 
+                        placeholder="Budget Range (e.g., 10000-15000)"
+                        value={formData.budget_range} 
+                        onChange={handleChange} 
+                        className="p-3 border border-gray-300 rounded-md"
+                    />
+                </div>
+                
+                {/* Deadline & Location */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Deadline</label>
+                        <input 
+                            type="datetime-local" 
+                            name="deadline" 
+                            value={formData.deadline} 
+                            onChange={handleChange} 
+                            className="w-full p-3 border border-gray-300 rounded-md"
+                            required
+                        />
+                    </div>
+                    <input 
+                        type="text" 
+                        name="location" 
+                        placeholder="Location"
+                        value={formData.location} 
+                        onChange={handleChange} 
+                        className="p-3 mt-5 border border-gray-300 rounded-md"
+                    />
+                </div>
+
+                {/* Contact Info */}
+                <input 
+                    type="email" 
+                    name="contact_info" 
+                    placeholder="Contact Email"
+                    value={formData.contact_info} 
+                    onChange={handleChange} 
+                    className="w-full p-3 border border-gray-300 rounded-md"
+                />
+
+                {/* Action Buttons */}
+                <div className="flex space-x-4 pt-4">
+                    <button
+                        type="button"
+                        onClick={() => handleSubmit('draft')}
+                        disabled={loading}
+                        className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition disabled:opacity-50"
+                    >
+                        {loading ? 'Saving...' : 'Save as Draft'}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleSubmit('publish')}
+                        disabled={loading}
+                        className="flex-1 px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition disabled:opacity-50"
+                    >
+                        {loading ? 'Publishing...' : 'Publish Tender'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+export default CreateTender;
+</file>
+
+<file path="src/Pages/Client/MyTenders.jsx">
+// src/Pages/Client/MyTenders.jsx
+import  { useEffect, useState } from 'react';
+import { getMyTenders, deleteTender } from '../../api/tenderApi';
+import { Link } from 'react-router-dom';
+
+const statusColors = {
+    draft: 'bg-gray-200 text-gray-800',
+    active: 'bg-green-100 text-green-800',
+    closed: 'bg-yellow-100 text-yellow-800',
+    archived: 'bg-red-100 text-red-800',
+};
+
+function MyTenders() {
+    const [tenders, setTenders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchTenders = async () => {
+        setLoading(true);
+        try {
+            // 1b: View dashboard of client tenders
+            const data = await getMyTenders();
+            setTenders(data);
+        } catch (err) {
+            setError(err.message || 'Failed to load tenders.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchTenders();
+    }, []);
+
+    // 1g: Delete the Tender
+    const handleDelete = async (tenderId) => {
+        if (!window.confirm("Are you sure you want to delete this tender? This action cannot be undone.")) {
+            return;
+        }
+        try {
+            await deleteTender(tenderId);
+            setTenders(tenders.filter(t => t.id !== tenderId));
+            alert('Tender deleted successfully.');
+        } catch (err) {
+            alert(`Deletion failed: ${err.message}`);
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center">Loading client tenders...</div>;
+    if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+
+    const tendersByStatus = tenders.reduce((acc, tender) => {
+        const status = tender.status.toLowerCase();
+        if (!acc[status]) acc[status] = [];
+        acc[status].push(tender);
+        return acc;
+    }, {});
+
+
+    return (
+        <div className="p-8">
+            <h1 className="text-3xl font-bold mb-6 text-indigo-600">My Tender Dashboard ({tenders.length})</h1>
+            <Link to="/client/tenders/create" className="inline-block mb-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                + Create New Tender
+            </Link>
+
+            {Object.keys(tendersByStatus).length === 0 && (
+                <p className="text-gray-500">You have no tenders yet. Start by creating one!</p>
+            )}
+
+            {Object.entries(tendersByStatus).map(([status, list]) => (
+                <div key={status} className="mb-8">
+                    <h2 className={`text-xl font-semibold capitalize mb-3 border-b-2 pb-1 ${statusColors[status] || 'text-gray-700'}`}>
+                        {status} Tenders ({list.length})
+                    </h2>
+                    
+                    <div className="space-y-4">
+                        {list.map((tender) => (
+                            <div key={tender.id} className="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-lg font-medium text-indigo-700">{tender.title}</h3>
+                                    <p className="text-sm text-gray-500">Deadline: {new Date(tender.deadline).toLocaleDateString()}</p>
+                                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded ${statusColors[tender.status.toLowerCase()]}`}>
+                                        {tender.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <div className="space-x-2">
+                                    <Link 
+                                        to={`/client/tenders/${tender.id}`}
+                                        className="px-3 py-1 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600"
+                                    >
+                                        Manage & View Proposals
+                                    </Link>
+                                    {(tender.status.toLowerCase() === 'draft' || tender.status.toLowerCase() === 'active') && (
+                                        <button 
+                                            onClick={() => handleDelete(tender.id)}
+                                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+export default MyTenders;
+</file>
+
+<file path="src/Pages/Client/TenderManager.jsx">
+// src/Pages/Client/TenderManager.jsx
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
+import { useParams, useNavigate } from 'react-router-dom';
+import { 
+    getTenderById, 
+    updateTender, 
+    closeTender, 
+    archiveTender,
+    extendTenderDeadline 
+} from '../../api/tenderApi';
+import { getProposalsByTender, updateProposalStatus } from '../../api/proposalApi';
+
+function TenderManager() {
+    const { tenderId } = useParams();
+    const navigate = useNavigate();
+    const [tender, setTender] = useState(null);
+    const [proposals, setProposals] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [editData, setEditData] = useState({});
+    const [newDeadline, setNewDeadline] = useState('');
+
+    const statusMap = {
+        shortlisted: 'bg-blue-100 text-blue-800',
+        awarded: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800',
+        submitted: 'bg-gray-100 text-gray-800',
+    };
+
+    // Use useCallback to memoize the function definition
+    const fetchTenderData = useCallback(async () => {
+        setLoading(true);
+        try {
+            // Fetch Tender details
+            const tenderData = await getTenderById(tenderId);
+            setTender(tenderData);
+            setEditData({
+                title: tenderData.title,
+                description: tenderData.description,
+                // Ensure budget_range exists before splitting
+                budget: tenderData.budget_range ? (tenderData.budget_range.split('-')[1] || '') : '', 
+                deadline: tenderData.deadline.substring(0, 16), // Format for datetime-local input
+                status: tenderData.status
+            });
+
+            // 2a: Fetch Proposals
+            const proposalsData = await getProposalsByTender(tenderId);
+            setProposals(proposalsData);
+
+        } catch (err) {
+            setError(err.message || 'Failed to load tender details.');
+        } finally {
+            setLoading(false);
+        }
+    }, [tenderId]); // fetchTenderData only depends on tenderId
+
+    useEffect(() => {
+        fetchTenderData();
+    }, [tenderId, fetchTenderData]); // Include fetchTenderData in the dependency array
+
+    // --- Tender Management Handlers (1c, 1d, 1e, 1f) ---
+
+    // 1c: Edit Tender (only possible if Draft or Active)
+    const handleEditChange = (e) => {
+        setEditData({ ...editData, [e.target.name]: e.target.value });
+    };
+
+    const handleEditSubmit = async () => {
+        try {
+            await updateTender(tenderId, editData);
+            alert('Tender updated successfully.');
+            fetchTenderData(); // Refresh data
+        } catch (err) {
+            alert(`Update failed: ${err.message}`);
+        }
+    };
+
+    // 1d: Extend Submission Deadline
+    const handleExtendDeadline = async () => {
+        if (!newDeadline) return alert("Please set a new deadline.");
+        try {
+            // ISO string conversion moved to the handler to match backend expectation
+            await extendTenderDeadline(tenderId, new Date(newDeadline).toISOString());
+            alert('Deadline extended successfully.');
+            fetchTenderData(); // Refresh data
+            setNewDeadline('');
+        } catch (err) {
+            alert(`Deadline extension failed: ${err.message}`);
+        }
+    };
+
+    // 1e: Close Tender
+    const handleCloseTender = async () => {
+        if (!window.confirm("Are you sure you want to close this tender? No new proposals will be accepted.")) return;
+        try {
+            await closeTender(tenderId);
+            alert('Tender closed.');
+            fetchTenderData();
+        } catch (err) {
+            alert(`Closure failed: ${err.message}`);
+        }
+    };
+
+    // 1f: Archive Tender
+    const handleArchiveTender = async () => {
+        if (!window.confirm("Are you sure you want to archive this tender?")) return;
+        try {
+            await archiveTender(tenderId);
+            alert('Tender archived.');
+            // Navigate away as archived tenders are usually removed from active views
+            navigate('/client/tenders'); 
+        } catch (err) {
+            alert(`Archive failed: ${err.message}`);
+        }
+    };
+
+
+    // --- Proposal Management Handlers (2b, 2c) ---
+
+    // 2b, 2c: Shortlist, Reject, Award
+    const handleProposalStatusUpdate = async (proposalId, status) => {
+        try {
+            await updateProposalStatus(proposalId, status);
+            alert(`Proposal status set to ${status}.`);
+            fetchTenderData(); // Refresh proposals list
+        } catch (err) {
+            alert(`Status update failed: ${err.message}`);
+        }
+    };
+
+    if (loading) return <div className="p-8 text-center">Loading tender details...</div>;
+    if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+    if (!tender) return <div className="p-8 text-center">Tender not found.</div>;
+
+    const isEditable = tender.status.toLowerCase() === 'draft' || tender.status.toLowerCase() === 'active';
+    const canManageProposals = tender.status.toLowerCase() !== 'draft';
+
+    return (
+        <div className="p-8 max-w-6xl mx-auto">
+            <h1 className="text-3xl font-bold mb-2 text-indigo-600">{tender.title}</h1>
+            <span className={`text-md font-semibold px-3 py-1 rounded-full ${statusMap[tender.status.toLowerCase()] || 'bg-gray-200 text-gray-800'} capitalize`}>
+                Status: {tender.status}
+            </span>
+            <p className="text-gray-600 mt-1">Deadline: {new Date(tender.deadline).toLocaleString()}</p>
+            
+            {/* --- Tender Control Panel --- */}
+            <div className="mt-6 p-4 bg-gray-50 border rounded-lg shadow-inner">
+                <h2 className="text-xl font-semibold mb-3">Tender Actions</h2>
+                <div className="flex space-x-3 flex-wrap">
+                    
+                    {tender.status.toLowerCase() === 'active' && (
+                        <>
+                            <button onClick={handleCloseTender} className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 text-sm">
+                                Close Tender (1e)
+                            </button>
+                            <div className="flex items-center space-x-2">
+                                <input 
+                                    type="datetime-local" 
+                                    value={newDeadline} 
+                                    onChange={(e) => setNewDeadline(e.target.value)} 
+                                    className="p-2 border rounded text-sm"
+                                />
+                                <button onClick={handleExtendDeadline} className="bg-orange-500 text-white p-2 rounded hover:bg-orange-600 text-sm">
+                                    Extend Deadline (1d)
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {tender.status.toLowerCase() === 'closed' && (
+                        <button onClick={handleArchiveTender} className="bg-red-500 text-white p-2 rounded hover:bg-red-600 text-sm">
+                            Archive Tender (1f)
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* --- Tender Editing (1c) --- */}
+            {isEditable && (
+                <div className="mt-8 p-6 border rounded-lg shadow-md bg-white">
+                    <h2 className="text-xl font-semibold mb-4 text-indigo-700">Edit Details (1c)</h2>
+                    <div className="space-y-3">
+                         <input 
+                            type="text" 
+                            name="title" 
+                            value={editData.title || ''}
+                            onChange={handleEditChange}
+                            className="w-full p-2 border rounded"
+                        />
+                        <textarea 
+                            name="description" 
+                            value={editData.description || ''}
+                            onChange={handleEditChange}
+                            rows="3"
+                            className="w-full p-2 border rounded"
+                        />
+                         <input 
+                            type="number" 
+                            name="budget" 
+                            placeholder="Budget"
+                            value={editData.budget || ''}
+                            onChange={handleEditChange}
+                            className="w-full p-2 border rounded"
+                        />
+                        <button onClick={handleEditSubmit} className="mt-3 bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            )}
+
+
+            {/* --- Proposal View (2a, 2b, 2c) --- */}
+            {canManageProposals && (
+                <div className="mt-8">
+                    <h2 className="text-2xl font-bold mb-4 text-indigo-600">Proposals ({proposals.length})</h2>
+                    
+                    {proposals.length === 0 ? (
+                        <p className="text-gray-500">No proposals submitted yet.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {proposals.map((proposal) => (
+                                <div key={proposal.id} className="p-4 border rounded-lg shadow-sm bg-white">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h3 className="text-lg font-medium">Proposal #{proposal.id} - Vendor Details Placeholder</h3>
+                                            <p className="text-sm text-gray-700 mt-1">Pricing: ${proposal.pricing || 'N/A'}</p>
+                                            {/* Fix 1: Escape quotes */}
+                                            <p className="text-sm text-gray-500 italic">&quot;{proposal.proposal_summary || 'No summary provided.'}&quot;</p>
+                                        </div>
+                                        <span className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusMap[proposal.status.toLowerCase()] || 'bg-gray-300'}`}>
+                                            {proposal.status}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="mt-4 pt-3 border-t flex space-x-3">
+                                        <button 
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'shortlisted')}
+                                            className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                        >
+                                            Shortlist (2b)
+                                        </button>
+                                        <button 
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'awarded')}
+                                            className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                        >
+                                            Award (2c)
+                                        </button>
+                                        <button 
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'rejected')}
+                                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                        >
+                                            Reject (2c)
+                                        </button>
+                                        {/* In a real app, there would be a link/button to view the proposal document */}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default TenderManager;
+</file>
+
+<file path=".eslintrc.cjs">
+module.exports = {
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react/jsx-runtime',
+    'plugin:react-hooks/recommended',
+  ],
+  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
+  settings: { react: { version: '18.2' } },
+  plugins: ['react-refresh'],
+  rules: {
+    'react-refresh/only-export-components': [
+      'warn',
+      { allowConstantExport: true },
+    ],
+  },
+}
+</file>
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="postcss.config.js">
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="README.md">
+# transport-website
+</file>
 
 <file path="src/api/auth.js">
 const API_BASE_URL = "http://localhost:7000/api";
@@ -120,6 +883,55 @@ export const fetchUserProfile = async (token) => {
 };
 </file>
 
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
 <file path="src/components/ProtectedRoute.jsx">
 import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types'; // 1. Import PropTypes
@@ -149,19 +961,26 @@ export default ProtectedRoute;
 </file>
 
 <file path="src/context/AuthContext.jsx">
-// --- Start of new structural approach for src/context/AuthContext.jsx ---
+// src/context/AuthContext.jsx (Corrected)
 
 import PropTypes from "prop-types";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { loginUser, fetchUserProfile, registerUser as apiRegisterUser } from '../api/auth';
-// Assuming AuthContext and useAuth are defined and exported elsewhere:
-import { AuthContext } from './AuthContext'; // Or wherever the Context object is defined
 
-// NOTE: We must ensure we remove the export of useAuth and AuthContext from this file
-// if we want to resolve the 'react-refresh/only-export-components' warning.
+// 1. Create and export the AuthContext object
+export const AuthContext = createContext(null);
+
+// 2. Define and export the custom hook for consuming the context
+// All pages/components (Dashboard, SignIn, SignUp, ProtectedRoute) rely on this hook.
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
 
 export const AuthProvider = ({ children }) => {
-    // ... (logic remains identical)
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(() => localStorage.getItem('authToken') || null);
     const [isLoading, setIsLoading] = useState(true);
@@ -172,6 +991,7 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 try {
                     const profileData = await fetchUserProfile(token); 
+                    // Handle the API potentially returning user details directly or wrapped in 'user' key
                     setUser(profileData.user || profileData);
                 } catch (err) {
                     console.error("Token verification failed, logging out:", err);
@@ -183,7 +1003,6 @@ export const AuthProvider = ({ children }) => {
         loadUser();
     }, [token]);
 
-    // ... (rest of functions: handleAuthSuccess, login, register, logout)
     const handleAuthSuccess = (data) => {
         const receivedToken = data.token;
         const receivedUser = data.user || data;
@@ -213,6 +1032,8 @@ export const AuthProvider = ({ children }) => {
         setIsLoading(true);
         try {
             const data = await apiRegisterUser(credentials); 
+            // If the backend returns a token upon registration, use handleAuthSuccess
+            // Otherwise, just return success data and rely on navigation to /signin
             if (data.token) handleAuthSuccess(data);
             return data;
         } catch (err) {
@@ -243,8 +1064,6 @@ export const AuthProvider = ({ children }) => {
 AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
-
-// --- End of new structural approach for src/context/AuthContext.jsx ---
 </file>
 
 <file path="src/Pages/Auth/SignIn.jsx">
@@ -523,6 +1342,7 @@ export default SignUp;
 
 <file path="src/Pages/Dashboard.jsx">
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom'; // <-- NEW IMPORT
 
 function Dashboard() {
     const { user, logout, isLoading } = useAuth();
@@ -531,14 +1351,40 @@ function Dashboard() {
         return <div className="text-center mt-20">Loading profile...</div>;
     }
     
-    // Safety check, although ProtectedRoute should handle this
     if (!user) {
         return <div className="text-center mt-20 text-red-500">Access Denied.</div>;
     }
 
+    // Determine if the user is a Client (important for feature gating)
+    const isClient = user.user_type && user.user_type.toLowerCase() === 'client';
+
     return (
         <div className="p-8">
             <h1 className="text-4xl font-bold mb-6 text-indigo-600">Welcome to your Dashboard!</h1>
+            
+            {/* Client specific navigation menu */}
+            {isClient && (
+                <div className="mb-10 p-6 bg-indigo-50 rounded-lg shadow-inner">
+                    <h2 className="text-2xl font-semibold mb-4 text-indigo-700">Client Tender Management</h2>
+                    <div className="flex space-x-4">
+                        <Link 
+                            to="/client/tenders" 
+                            className="px-6 py-3 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-150"
+                        >
+                            View My Tenders (Dashboard)
+                        </Link>
+                        <Link 
+                            to="/client/tenders/create" 
+                            className="px-6 py-3 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-150"
+                        >
+                            Create New Tender
+                        </Link>
+                    </div>
+                </div>
+            )}
+            {/* End of Client navigation */}
+
+
             <div className="bg-white shadow overflow-hidden sm:rounded-lg max-w-lg mx-auto p-6 border border-gray-200">
                 <h3 className="text-xl font-medium leading-6 text-gray-900 mb-4 border-b pb-2">User Profile Details</h3>
                 
@@ -573,138 +1419,6 @@ function Dashboard() {
 }
 
 export default Dashboard;
-</file>
-
-<file path=".eslintrc.cjs">
-module.exports = {
-  root: true,
-  env: { browser: true, es2020: true },
-  extends: [
-    'eslint:recommended',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
-  ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-  },
-}
-</file>
-
-<file path=".gitignore">
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-</file>
-
-<file path="postcss.config.js">
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-</file>
-
-<file path="public/vite.svg">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
-</file>
-
-<file path="README.md">
-# transport-website
-</file>
-
-<file path="src/App.css">
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
-</file>
-
-<file path="src/assets/react.svg">
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
-</file>
-
-<file path="src/Pages/test/test.jsx">
-function Test() {
-
-
-  return (
-    <div className="">
-    
-    <h1>hi this is test file</h1>
-
-    </div>
-  )
-}
-
-export default Test
 </file>
 
 <file path="vite.config.js">
@@ -798,48 +1512,6 @@ img, a {
 }
 </file>
 
-<file path="src/main.jsx">
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import { BrowserRouter } from "react-router-dom";
-import { AuthProvider } from './context/AuthContext.jsx';
-
-
-ReactDOM.createRoot(document.getElementById('root')).render(
- <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter> 
-        <App />
-      </BrowserRouter>
-    </AuthProvider>
-  </React.StrictMode>
-)
-</file>
-
-<file path="index.html">
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <title>Biztech-Software-Frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-<script>
-  AOS.init({duration:1000});
-</script>
-  </body>
-</html>
-</file>
-
 <file path="package.json">
 {
   "name": "registration",
@@ -878,45 +1550,24 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 }
 </file>
 
-<file path="src/App.jsx">
-import { Routes, Route } from "react-router-dom";
-import SignIn from "./Pages/Auth/SignIn";
-import SignUp from "./Pages/Auth/SignUp";
-import Dashboard from "./Pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
+<file path="src/main.jsx">
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from './context/AuthContext.jsx';
 
-import Test from "./Pages/test/test";
 
-
-function App() {
-
-  return (
-    <>
-    <Routes>
-      
-      {/* Public/Auth Routes */}
-      <Route path="/" element={<SignIn/>}/> 
-      <Route path="/signin" element={<SignIn/>}/>             
-      <Route path="/signup" element={<SignUp/>}/>             
-
-      {/* Protected Route */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      
-      {/* Existing Test Route */}
-      <Route path="/test" element={<Test/>}/> 
-    </Routes>
-    </>
-  )
-}
-
-export default App
+ReactDOM.createRoot(document.getElementById('root')).render(
+ <React.StrictMode>
+    <AuthProvider>
+      <BrowserRouter> 
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
+  </React.StrictMode>
+)
 </file>
 
 <file path="tailwind.config.js">
@@ -999,6 +1650,96 @@ export default {
     }
   ],
 }
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <title>Biztech-Software-Frontend</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({duration:1000});
+</script>
+  </body>
+</html>
+</file>
+
+<file path="src/App.jsx">
+import { Routes, Route } from "react-router-dom";
+import SignIn from "./Pages/Auth/SignIn";
+import SignUp from "./Pages/Auth/SignUp";
+import Dashboard from "./Pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+// Import new Client pages
+import MyTenders from "./Pages/Client/MyTenders";
+import CreateTender from "./Pages/Client/CreateTender";
+import TenderManager from "./Pages/Client/TenderManager"; 
+
+
+function App() {
+
+  return (
+    <>
+    <Routes>
+      
+      {/* Public/Auth Routes */}
+      <Route path="/" element={<SignIn/>}/> 
+      <Route path="/signin" element={<SignIn/>}/>             
+      <Route path="/signup" element={<SignUp/>}/>             
+
+      {/* Protected Routes (General) */}
+      <Route 
+        path="/dashboard" 
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      
+      {/* Client Specific Protected Routes */}
+      <Route 
+        path="/client/tenders" 
+        element={
+          <ProtectedRoute>
+            <MyTenders /> {/* 1b - Dashboard of all client tenders */}
+          </ProtectedRoute>
+        }
+      />
+      <Route 
+        path="/client/tenders/create" 
+        element={
+          <ProtectedRoute>
+            <CreateTender /> {/* 1a - Creation/Drafting */}
+          </ProtectedRoute>
+        }
+      />
+      <Route 
+        path="/client/tenders/:tenderId" 
+        element={
+          <ProtectedRoute>
+            <TenderManager /> {/* Handles view, edit, proposals, status changes */}
+          </ProtectedRoute>
+        }
+      />
+     
+    </Routes>
+    </>
+  )
+}
+
+export default App
 </file>
 
 </files>
