@@ -3,6 +3,7 @@ import  { useEffect, useState } from 'react';
 // IMPORT publishTender
 import { getMyTenders, deleteTender, publishTender } from '../../api/tenderApi'; 
 import { Link } from 'react-router-dom';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
 
 const statusColors = {
     draft: 'bg-gray-200 text-gray-800',
@@ -74,6 +75,7 @@ function MyTenders() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
             <h1 className="text-3xl font-bold mb-6 text-indigo-600">My Tender Dashboard ({tenders.length})</h1>
             <Link to="/client/tenders/create" className="inline-block mb-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                 + Create New Tender

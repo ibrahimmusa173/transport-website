@@ -9,6 +9,7 @@ import {
     extendTenderDeadline 
 } from '../../api/tenderApi';
 import { getProposalsByTender, updateProposalStatus } from '../../api/proposalApi';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
 
 function TenderManager() {
     const { tenderId } = useParams();
@@ -137,6 +138,7 @@ function TenderManager() {
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
+            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
             <h1 className="text-3xl font-bold mb-2 text-indigo-600">{tender.title}</h1>
             <span className={`text-md font-semibold px-3 py-1 rounded-full ${statusMap[tender.status.toLowerCase()] || 'bg-gray-200 text-gray-800'} capitalize`}>
                 Status: {tender.status}

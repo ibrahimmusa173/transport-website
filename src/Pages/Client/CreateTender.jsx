@@ -1,7 +1,8 @@
 // src/Pages/Client/CreateTender.jsx
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createTender, publishTender } from '../../api/tenderApi';
+import { createTender } from '../../api/tenderApi';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
 
 const initialTenderState = {
     title: '',
@@ -24,7 +25,7 @@ function CreateTender() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (status) => {
+    const handleSubmit = async (actionType) => { // Renamed 'status' to 'actionType' for clarity
         setLoading(true);
         setError(null);
 
@@ -36,27 +37,27 @@ function CreateTender() {
         }
 
         try {
-            // 1a: Create/Save Tender (status will default to 'draft' or 'active' based on the status variable)
-            const draftPayload = {
+            const payload = {
                 ...formData,
-                // If publishing immediately, set status to active for the creation call
-                status: status === 'publish' ? 'active' : 'draft', 
+                // Set the initial status based on the actionType
+                status: actionType === 'publish' ? 'active' : 'draft',
                 // Note: Attachments handling is skipped for simplicity but should be managed here.
                 attachments: [],
             };
-            
-            const newTender = await createTender(draftPayload);
 
-            if (status === 'publish') {
-                // 1a: Publish the tender
-                await publishTender(newTender.id);
+            // MODIFICATION: Removed 'const newTender =' as the variable is not used.
+            await createTender(payload); // Call createTender once
+
+            if (actionType === 'publish') {
                 alert('Tender published successfully!');
-            } else {
-                 alert('Tender saved as draft successfully!');
+            } else { // actionType is 'draft'
+                alert('Tender saved as draft successfully!');
             }
 
-            navigate('/client/tenders'); // Redirect to the client's tender list
+            // Redirect to the client's tender list or the new tender's detail page
+            navigate('/client/tenders');
         } catch (err) {
+            // Check if err is an object and has a message property, otherwise default
             setError(err.message || 'Failed to process tender.');
         } finally {
             setLoading(false);
@@ -65,82 +66,83 @@ function CreateTender() {
 
     return (
         <div className="p-8 max-w-3xl mx-auto">
+            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
             <h1 className="text-3xl font-bold mb-6 text-indigo-600">Create New Tender</h1>
-            
+
             {error && <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">{error}</div>}
 
             <form className="space-y-4">
                 {/* Title */}
-                <input 
-                    type="text" 
-                    name="title" 
+                <input
+                    type="text"
+                    name="title"
                     placeholder="Tender Title"
-                    value={formData.title} 
-                    onChange={handleChange} 
+                    value={formData.title}
+                    onChange={handleChange}
                     className="w-full p-3 border border-gray-300 rounded-md"
                     required
                 />
-                
+
                 {/* Description */}
-                <textarea 
-                    name="description" 
+                <textarea
+                    name="description"
                     placeholder="Detailed Description"
-                    value={formData.description} 
-                    onChange={handleChange} 
+                    value={formData.description}
+                    onChange={handleChange}
                     rows="4"
                     className="w-full p-3 border border-gray-300 rounded-md"
                 />
 
                 {/* Category & Budget */}
                 <div className="grid grid-cols-2 gap-4">
-                    <input 
-                        type="text" 
-                        name="category" 
+                    <input
+                        type="text"
+                        name="category"
                         placeholder="Category (e.g., Web Development)"
-                        value={formData.category} 
-                        onChange={handleChange} 
+                        value={formData.category}
+                        onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md"
                     />
-                    <input 
-                        type="text" 
-                        name="budget_range" 
+                    <input
+                        type="text"
+                        name="budget_range"
                         placeholder="Budget Range (e.g., 10000-15000)"
-                        value={formData.budget_range} 
-                        onChange={handleChange} 
+                        value={formData.budget_range}
+                        onChange={handleChange}
                         className="p-3 border border-gray-300 rounded-md"
                     />
                 </div>
-                
+
                 {/* Deadline & Location */}
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Deadline</label>
-                        <input 
-                            type="datetime-local" 
-                            name="deadline" 
-                            value={formData.deadline} 
-                            onChange={handleChange} 
+                        <input
+                            type="datetime-local"
+                            name="deadline"
+                            value={formData.deadline}
+                            onChange={handleChange}
                             className="w-full p-3 border border-gray-300 rounded-md"
                             required
                         />
                     </div>
-                    <input 
-                        type="text" 
-                        name="location" 
+                    <input
+                        type="text"
+                        name="location"
                         placeholder="Location"
-                        value={formData.location} 
-                        onChange={handleChange} 
+                        value={formData.location}
+                        onChange={handleChange}
                         className="p-3 mt-5 border border-gray-300 rounded-md"
                     />
                 </div>
 
                 {/* Contact Info */}
-                <input 
-                    type="email" 
-                    name="contact_info" 
+                <input
+                    type="email"
+                    name="contact_info"
                     placeholder="Contact Email"
-                    value={formData.contact_info} 
-                    onChange={handleChange} 
+                    value={formData.contact_info}
+                    onChange={handleChange}
                     className="w-full p-3 border border-gray-300 rounded-md"
                 />
 

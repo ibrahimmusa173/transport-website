@@ -1,23 +1,28 @@
-import { Navigate } from 'react-router-dom';
-import PropTypes from 'prop-types'; // 1. Import PropTypes
+// src/components/ProtectedRoute.jsx
 import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom'; 
+import PropTypes from 'prop-types'; // Import PropTypes
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, isLoading } = useAuth();
 
     if (isLoading) {
-        return <div className="text-center mt-20">Loading authentication state...</div>;
+        return <div className="text-center mt-20">Loading authentication status...</div>;
     }
 
     if (!isAuthenticated) {
-        // Redirect non-authenticated users to the sign-in page
         return <Navigate to="/signin" replace />;
     }
 
-    return children;
+    // Only authentication logic remains here.
+    return (
+        <main className="min-h-screen"> 
+            {children}
+        </main>
+    );
 }
 
-// 2. Add PropTypes validation
+// Add PropTypes validation
 ProtectedRoute.propTypes = {
     children: PropTypes.node.isRequired,
 };

@@ -1,4 +1,4 @@
-// src/api/tenderApi.js (MODIFIED to include Admin endpoints)
+// src/api/tenderApi.js
 import authenticatedFetch from './apiClient';
 
 // =======================================================
@@ -6,10 +6,17 @@ import authenticatedFetch from './apiClient';
 // =======================================================
 
 // 1a) Search and Filter Tenders
-// API: /api/tenders/search?keywords=...
+// API: /api/tenders/search?keywords=... (Handles all query params)
 export const getTenders = (params = {}) => {
-    // Converts {keywords: 'IT', location: 'London'} => 'keywords=IT&location=London'
-    const query = new URLSearchParams(params).toString();
+    // Filter out undefined/null/empty string values for cleaner query params
+    const cleanParams = Object.keys(params).reduce((acc, key) => {
+        if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+            acc[key] = params[key];
+        }
+        return acc;
+    }, {});
+    
+    const query = new URLSearchParams(cleanParams).toString();
     return authenticatedFetch(`/tenders/search?${query}`);
 };
 
@@ -91,17 +98,16 @@ export const deleteTender = (tenderId) => {
 // ADMIN Tender Management Functions (NEW)
 // =======================================================
 
-// 1. View all tenders on the platform.
+// 1. View all tenders on the platform. (Req 2)
 // API: GET http://localhost:7000/api/tenders/admin/all
 export const getAllTendersAdmin = () => {
     return authenticatedFetch('/tenders/admin/all');
 };
 
 // 2. Admins to view specific tender.
-// API: GET http://localhost:7000/api/tenders/:id 
 // Note: We reuse getTenderDetails/getTenderById, relying on the backend to grant Admin access.
 
-// 3. Moderate, approve, or reject tenders.
+// 3. Moderate, approve, or reject tenders. (Req 3)
 // API: PUT http://localhost:7000/api/tenders/admin/:id/moderate
 export const moderateTenderAdmin = (tenderId, moderationData) => {
     // moderationData should contain { status: 'approved' | 'rejected', reason: '...' }
@@ -111,7 +117,7 @@ export const moderateTenderAdmin = (tenderId, moderationData) => {
     });
 };
 
-// 4. Edit tender.
+// 4. Edit tender. (Req 4 - part 1)
 // API: PUT http://localhost:7000/api/tenders/admin/:id 
 export const updateTenderAdmin = (tenderId, tenderData) => {
     return authenticatedFetch(`/tenders/admin/${tenderId}`, {
@@ -120,7 +126,7 @@ export const updateTenderAdmin = (tenderId, tenderData) => {
     });
 };
 
-// 5. Delete tender.
+// 5. Delete tender. (Req 4 - part 2)
 // API: DELETE http://localhost:7000/api/tenders/admin/:id
 export const deleteTenderAdmin = (tenderId) => {
     return authenticatedFetch(`/tenders/admin/${tenderId}`, {
