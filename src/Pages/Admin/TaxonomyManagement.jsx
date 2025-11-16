@@ -1,7 +1,6 @@
-// src/Pages/Admin/TaxonomyManagement.jsx
-
 import { useEffect, useState } from 'react';
 import { getTaxonomiesAdmin, createTaxonomy, updateTaxonomy, deleteTaxonomy } from '../../api/taxonomyApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function TaxonomyManagement() {
     const [taxonomies, setTaxonomies] = useState([]);
@@ -86,6 +85,7 @@ function TaxonomyManagement() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-cyan-700">Admin: Taxonomy Management</h1>
             <p className="mb-6 text-gray-600">Manage categories, industries, and other classification items used on the platform.</p>
 

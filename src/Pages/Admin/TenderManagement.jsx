@@ -1,6 +1,6 @@
-// src/Pages/Admin/TenderManagement.jsx
 import { useEffect, useState } from 'react';
 import { getAllTendersAdmin, moderateTenderAdmin, deleteTenderAdmin } from '../../api/tenderApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function TenderManagement() {
     const [tenders, setTenders] = useState([]);
@@ -66,7 +66,12 @@ function TenderManagement() {
 
 
     if (loading) return <div className="p-8">Loading tenders...</div>;
-    if (tenders.length === 0) return <div className="p-8">No tenders found for moderation.</div>;
+    if (tenders.length === 0) return (
+        <div className="p-8">
+            <DashboardLinkButton /> {/* Added here for no content case */}
+            No tenders found for moderation.
+        </div>
+    );
 
     const getStatusColor = (status) => {
         switch (status.toLowerCase()) {
@@ -81,6 +86,7 @@ function TenderManagement() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-green-700">Admin: Tender Management & Moderation (Req 2-4)</h1>
             <p className="mb-6 text-gray-600">Viewing all {tenders.length} tenders regardless of status.</p>
             

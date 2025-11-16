@@ -1,6 +1,6 @@
-// src/Pages/Admin/ProposalManagement.jsx
 import { useEffect, useState } from 'react'; // Removed unused 'React' import
 import { getAllProposalsAdmin } from '../../api/proposalApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function ProposalManagement() {
     const [proposals, setProposals] = useState([]);
@@ -22,10 +22,16 @@ function ProposalManagement() {
 
     if (loading) return <div className="p-8">Loading proposals...</div>;
     
-    if (proposals.length === 0) return <div className="p-8">No proposals found.</div>;
+    if (proposals.length === 0) return (
+        <div className="p-8">
+            <DashboardLinkButton /> {/* Added here for no content case */}
+            No proposals found.
+        </div>
+    );
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-purple-700">Admin: Proposal Management</h1>
             <p className="mb-6 text-gray-600">Viewing all submitted proposals on the platform.</p>
             

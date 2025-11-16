@@ -1,7 +1,7 @@
-// src/Pages/Admin/UserManagement.jsx
 import { useEffect, useState } from 'react';
 import { getAllUsersAdmin, updateUserAdmin, deleteUserAdmin } from '../../api/userApi'; 
 import { useAuth } from '../../context/AuthContext'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function UserManagement() {
     const { user: currentUser } = useAuth(); // Current authenticated admin user
@@ -66,6 +66,7 @@ function UserManagement() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-indigo-700">Admin: User Management (Req 1)</h1>
             
             {statusMessage.message && (

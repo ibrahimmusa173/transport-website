@@ -1,7 +1,6 @@
-// src/Pages/Admin/ContentManagement.jsx
-
 import { useEffect, useState } from 'react';
 import { getTenderGuidelines, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function ContentManagement() {
     const [guidelines, setGuidelines] = useState([]);
@@ -86,6 +85,7 @@ function ContentManagement() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-orange-700">Admin: Content Management (Tender Guidelines)</h1>
             
             {statusMessage.message && (

@@ -1,8 +1,7 @@
-// src/Pages/Admin/AnalyticsDashboard.jsx
-
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types'; // <-- Import PropTypes
+import PropTypes from 'prop-types'; 
 import { getAdminDashboardAnalytics, getUserReport, getTenderReport } from '../../api/analyticsApi';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
 
 function AnalyticsDashboard() {
     const [dashboardData, setDashboardData] = useState({});
@@ -47,6 +46,7 @@ function AnalyticsDashboard() {
 
     return (
         <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
             <h1 className="text-3xl font-bold mb-6 text-red-700">Admin: Platform Analytics & Reports (Req 14)</h1>
             <p className="mb-8 text-gray-600">Overview of key platform metrics.</p>
 
