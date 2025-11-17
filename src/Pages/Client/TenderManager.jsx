@@ -1,5 +1,4 @@
-// src/Pages/Client/TenderManager.jsx
-import { useEffect, useState, useCallback } from 'react'; // Import useCallback
+import { useEffect, useState, useCallback } from 'react'; 
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
     getTenderById, 
@@ -9,7 +8,7 @@ import {
     extendTenderDeadline 
 } from '../../api/tenderApi';
 import { getProposalsByTender, updateProposalStatus } from '../../api/proposalApi';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
+import DashboardLinkButton from '../../components/DashboardLinkButton'; 
 
 function TenderManager() {
     const { tenderId } = useParams();
@@ -28,7 +27,6 @@ function TenderManager() {
         submitted: 'bg-gray-100 text-gray-800',
     };
 
-    // Use useCallback to memoize the function definition
     const fetchTenderData = useCallback(async () => {
         setLoading(true);
         try {
@@ -38,13 +36,13 @@ function TenderManager() {
             setEditData({
                 title: tenderData.title,
                 description: tenderData.description,
-                // Ensure budget_range exists before splitting
+                // Handle budget_range safely
                 budget: tenderData.budget_range ? (tenderData.budget_range.split('-')[1] || '') : '', 
                 deadline: tenderData.deadline.substring(0, 16), // Format for datetime-local input
                 status: tenderData.status
             });
 
-            // 2a: Fetch Proposals
+            // Fetch Proposals
             const proposalsData = await getProposalsByTender(tenderId);
             setProposals(proposalsData);
 
@@ -53,24 +51,25 @@ function TenderManager() {
         } finally {
             setLoading(false);
         }
-    }, [tenderId]); // fetchTenderData only depends on tenderId
+    }, [tenderId]); 
 
     useEffect(() => {
         fetchTenderData();
-    }, [tenderId, fetchTenderData]); // Include fetchTenderData in the dependency array
+    }, [tenderId, fetchTenderData]); 
 
     // --- Tender Management Handlers (1c, 1d, 1e, 1f) ---
 
-    // 1c: Edit Tender (only possible if Draft or Active)
+    // 1c: Edit Tender (Used in JSX below)
     const handleEditChange = (e) => {
         setEditData({ ...editData, [e.target.name]: e.target.value });
     };
 
+    // 1c: Edit Tender Submit (Used in JSX below)
     const handleEditSubmit = async () => {
         try {
             await updateTender(tenderId, editData);
             alert('Tender updated successfully.');
-            fetchTenderData(); // Refresh data
+            fetchTenderData(); 
         } catch (err) {
             alert(`Update failed: ${err.message}`);
         }
@@ -80,10 +79,9 @@ function TenderManager() {
     const handleExtendDeadline = async () => {
         if (!newDeadline) return alert("Please set a new deadline.");
         try {
-            // ISO string conversion moved to the handler to match backend expectation
             await extendTenderDeadline(tenderId, new Date(newDeadline).toISOString());
             alert('Deadline extended successfully.');
-            fetchTenderData(); // Refresh data
+            fetchTenderData(); 
             setNewDeadline('');
         } catch (err) {
             alert(`Deadline extension failed: ${err.message}`);
@@ -95,8 +93,8 @@ function TenderManager() {
         if (!window.confirm("Are you sure you want to close this tender? No new proposals will be accepted.")) return;
         try {
             await closeTender(tenderId);
-            alert('Tender closed.');
-            fetchTenderData();
+            alert('Tender closed. Status changed to CLOSED.');
+            fetchTenderData(); 
         } catch (err) {
             alert(`Closure failed: ${err.message}`);
         }
@@ -108,7 +106,6 @@ function TenderManager() {
         try {
             await archiveTender(tenderId);
             alert('Tender archived.');
-            // Navigate away as archived tenders are usually removed from active views
             navigate('/client/tenders'); 
         } catch (err) {
             alert(`Archive failed: ${err.message}`);
@@ -117,8 +114,7 @@ function TenderManager() {
 
 
     // --- Proposal Management Handlers (2b, 2c) ---
-
-    // 2b, 2c: Shortlist, Reject, Award
+    // (Used in JSX below)
     const handleProposalStatusUpdate = async (proposalId, status) => {
         try {
             await updateProposalStatus(proposalId, status);
@@ -138,7 +134,7 @@ function TenderManager() {
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
+            <DashboardLinkButton /> 
             <h1 className="text-3xl font-bold mb-2 text-indigo-600">{tender.title}</h1>
             <span className={`text-md font-semibold px-3 py-1 rounded-full ${statusMap[tender.status.toLowerCase()] || 'bg-gray-200 text-gray-800'} capitalize`}>
                 Status: {tender.status}
@@ -152,9 +148,11 @@ function TenderManager() {
                     
                     {tender.status.toLowerCase() === 'active' && (
                         <>
+                            {/* 1e: Close Tender Button */}
                             <button onClick={handleCloseTender} className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 text-sm">
-                                Close Tender (1e)
+                                Close Tender (Stop Proposals)
                             </button>
+                            
                             <div className="flex items-center space-x-2">
                                 <input 
                                     type="datetime-local" 
@@ -170,8 +168,9 @@ function TenderManager() {
                     )}
 
                     {tender.status.toLowerCase() === 'closed' && (
+                        /* 1f: Archive Tender Button */
                         <button onClick={handleArchiveTender} className="bg-red-500 text-white p-2 rounded hover:bg-red-600 text-sm">
-                            Archive Tender (1f)
+                            Archive Tender
                         </button>
                     )}
                 </div>
@@ -186,13 +185,13 @@ function TenderManager() {
                             type="text" 
                             name="title" 
                             value={editData.title || ''}
-                            onChange={handleEditChange}
+                            onChange={handleEditChange} // <-- USED
                             className="w-full p-2 border rounded"
                         />
                         <textarea 
                             name="description" 
                             value={editData.description || ''}
-                            onChange={handleEditChange}
+                            onChange={handleEditChange} // <-- USED
                             rows="3"
                             className="w-full p-2 border rounded"
                         />
@@ -201,7 +200,7 @@ function TenderManager() {
                             name="budget" 
                             placeholder="Budget"
                             value={editData.budget || ''}
-                            onChange={handleEditChange}
+                            onChange={handleEditChange} // <-- USED
                             className="w-full p-2 border rounded"
                         />
                         <button onClick={handleEditSubmit} className="mt-3 bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">
@@ -227,7 +226,6 @@ function TenderManager() {
                                         <div>
                                             <h3 className="text-lg font-medium">Proposal #{proposal.id} - Vendor Details Placeholder</h3>
                                             <p className="text-sm text-gray-700 mt-1">Pricing: ${proposal.pricing || 'N/A'}</p>
-                                            {/* Fix 1: Escape quotes */}
                                             <p className="text-sm text-gray-500 italic">&quot;{proposal.proposal_summary || 'No summary provided.'}&quot;</p>
                                         </div>
                                         <span className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusMap[proposal.status.toLowerCase()] || 'bg-gray-300'}`}>
@@ -237,27 +235,26 @@ function TenderManager() {
                                     
                                     <div className="mt-4 pt-3 border-t flex space-x-3">
                                         <button 
-                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'shortlisted')}
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'shortlisted')} // <-- USED
                                             className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
                                             disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
                                         >
                                             Shortlist (2b)
                                         </button>
                                         <button 
-                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'awarded')}
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'awarded')} // <-- USED
                                             className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
                                             disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
                                         >
                                             Award (2c)
                                         </button>
                                         <button 
-                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'rejected')}
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'rejected')} // <-- USED
                                             className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
                                             disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
                                         >
                                             Reject (2c)
                                         </button>
-                                        {/* In a real app, there would be a link/button to view the proposal document */}
                                     </div>
                                 </div>
                             ))}

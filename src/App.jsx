@@ -1,4 +1,3 @@
-// src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import SignIn from "./Pages/Auth/SignIn";
 import SignUp from "./Pages/Auth/SignUp";

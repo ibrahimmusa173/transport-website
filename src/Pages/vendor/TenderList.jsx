@@ -1,23 +1,26 @@
-// src/Pages/Vendor/TenderList.jsx
-import  { useState, useEffect, useCallback } from 'react';
-import { getTenders } from '../../api/tenderApi'; 
+// [Filename: src/Pages/vendor/TenderList.jsx]
+
+import { useState, useEffect, useCallback } from 'react';
+import { getTenders, getActiveTendersFeed } from '../../api/tenderApi';
 import { Link } from 'react-router-dom';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // Import the new component
+import DashboardLinkButton from '../../components/DashboardLinkButton'; 
+
+// Initial search parameters for filtering (Moved outside the component to ensure stable reference and fix ESLint warning)
+const initialSearchParams = {
+    keywords: '',
+    category: '',
+    location: '',
+    min_budget: '',
+    max_budget: '',
+    sort_by: 'created_at', 
+    order_by: 'DESC',       
+    status: 'active',       
+};
 
 function TenderList() {
     const [tenders, setTenders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
-    const initialSearchParams = {
-        keywords: '',
-        category: '',
-        location: '',
-        min_budget: '',
-        max_budget: '',
-        sort_by: 'created_at',
-        order_by: 'DESC',
-    };
     
     const [searchParams, setSearchParams] = useState(initialSearchParams);
 
@@ -29,25 +32,40 @@ function TenderList() {
         { value: 'budget', label: 'Budget' },
     ];
 
+    // Helper to check if any filter fields are actively set
+    // This hook is now stable as initialSearchParams is defined outside the component.
+    const filtersAreActive = useCallback((params) => {
+        const checkKeys = ['keywords', 'category', 'location', 'min_budget', 'max_budget'];
+        return checkKeys.some(key => params[key] !== initialSearchParams[key]);
+    }, []); 
 
     const fetchTenders = useCallback(async (params) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getTenders(params);
+            let data;
+            
+            // Determine which API endpoint to use:
+            if (!filtersAreActive(params)) {
+                // If no filters are active, use the clean feed endpoint (GET /api/tenders)
+                data = await getActiveTendersFeed(); 
+            } else {
+                // If filters are active, use the search endpoint (GET /api/tenders/search)
+                data = await getTenders(params);
+            }
+
             setTenders(data);
         } catch (err) {
-            // Updated error message to hint at network or backend issue
             setError('Failed to fetch active tenders. Check your network connection or the server status.');
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [filtersAreActive]); 
 
     // Effect to trigger fetch whenever searchParams change
     useEffect(() => {
         const handler = setTimeout(() => {
-            fetchTenders(searchParams);
+            fetchTenders(searchParams); 
         }, 300); 
 
         return () => {
@@ -57,7 +75,14 @@ function TenderList() {
 
     const handleSearchChange = (e) => {
         const { name, value } = e.target;
-        setSearchParams(prev => ({ ...prev, [name]: value }));
+        // When changing a filter, reset status and sort to ensure integrity
+        setSearchParams(prev => ({ 
+            ...prev, 
+            [name]: value,
+            // Optimization: If a filter changes, we might default back to DESC posting date
+            sort_by: prev.sort_by === 'created_at' ? 'created_at' : prev.sort_by,
+            order_by: 'DESC'
+        }));
     };
     
     const handleClearFilters = () => {
@@ -76,7 +101,7 @@ function TenderList() {
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <DashboardLinkButton /> {/* ADDED BUTTON */}
+            <DashboardLinkButton /> 
             
             <h1 className="text-3xl font-bold mb-6 text-green-700">Explore Active Tenders</h1>
             
