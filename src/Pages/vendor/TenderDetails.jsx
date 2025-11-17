@@ -94,6 +94,15 @@ function TenderDetails() {
     // Check if the tender is still active for submission
     const isTenderActive = tender.status?.toLowerCase() === 'active' && new Date(tender.deadline) > new Date();
 
+    // Determine the reason if inactive (IMPROVED ERROR CLARITY)
+    let inactiveReason = '';
+    if (tender.status?.toLowerCase() !== 'active') {
+        inactiveReason = `Status is '${tender.status}' (must be 'Active'). It may be Draft, Pending Review, or Closed.`;
+    } else if (new Date(tender.deadline) <= new Date()) {
+        inactiveReason = 'The submission deadline has passed.';
+    }
+
+
     return (
         <div className="p-8 max-w-6xl mx-auto">
             <DashboardLinkButton /> {/* ADDED BUTTON */}
@@ -143,7 +152,8 @@ function TenderDetails() {
 
                     {!isTenderActive && (
                         <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-md">
-                            This tender is closed or not currently accepting proposals.
+                            <p className="font-semibold">This tender is closed or not currently accepting proposals.</p>
+                            {inactiveReason && <p className="text-sm mt-1">{inactiveReason}</p>}
                         </div>
                     )}
 

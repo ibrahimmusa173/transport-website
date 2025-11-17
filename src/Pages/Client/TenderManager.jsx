@@ -26,6 +26,8 @@ function TenderManager() {
         awarded: 'bg-green-100 text-green-800',
         rejected: 'bg-red-100 text-red-800',
         submitted: 'bg-gray-100 text-gray-800',
+        viewed: 'bg-yellow-100 text-yellow-800', // R10 Tracking
+        withdrawn: 'bg-gray-300 text-gray-600 italic',
     };
 
     // Use useCallback to memoize the function definition
@@ -44,7 +46,7 @@ function TenderManager() {
                 status: tenderData.status
             });
 
-            // 2a: Fetch Proposals
+            // R7: Fetch Proposals
             const proposalsData = await getProposalsByTender(tenderId);
             setProposals(proposalsData);
 
@@ -116,9 +118,9 @@ function TenderManager() {
     };
 
 
-    // --- Proposal Management Handlers (2b, 2c) ---
+    // --- Proposal Management Handlers (R8, R9) ---
 
-    // 2b, 2c: Shortlist, Reject, Award
+    // R8, R9: Shortlist, Reject, Award
     const handleProposalStatusUpdate = async (proposalId, status) => {
         try {
             await updateProposalStatus(proposalId, status);
@@ -212,10 +214,10 @@ function TenderManager() {
             )}
 
 
-            {/* --- Proposal View (2a, 2b, 2c) --- */}
+            {/* --- Proposal View (R7 - R10) --- */}
             {canManageProposals && (
                 <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4 text-indigo-600">Proposals ({proposals.length})</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-indigo-600">Proposals ({proposals.length}) - Review & Status Tracking (R7, R10)</h2>
                     
                     {proposals.length === 0 ? (
                         <p className="text-gray-500">No proposals submitted yet.</p>
@@ -225,10 +227,24 @@ function TenderManager() {
                                 <div key={proposal.id} className="p-4 border rounded-lg shadow-sm bg-white">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <h3 className="text-lg font-medium">Proposal #{proposal.id} - Vendor Details Placeholder</h3>
-                                            <p className="text-sm text-gray-700 mt-1">Pricing: ${proposal.pricing || 'N/A'}</p>
-                                            {/* Fix 1: Escape quotes */}
-                                            <p className="text-sm text-gray-500 italic">&quot;{proposal.proposal_summary || 'No summary provided.'}&quot;</p>
+                                            {/* R7: Vendor details, using placeholder vendor_name */}
+                                            <h3 className="text-lg font-medium">
+                                                {/* Assuming the API response includes basic vendor info like vendor_name or company_name */}
+                                                Proposal from: {proposal.vendor_company_name || `Vendor ID: ${proposal.vendor_id}`} 
+                                            </h3>
+                                            
+                                            {/* R7: Pricing */}
+                                            <p className="text-sm text-gray-700 mt-1">Proposed Pricing: <span className='font-bold'>${proposal.pricing ? parseFloat(proposal.pricing).toLocaleString() : 'N/A'}</span></p>
+                                            
+                                            {/* R7: Cover Letter snippet (Part of submitted info) */}
+                                            <p className="text-sm text-gray-500 italic mt-2 truncate max-w-xl">
+                                                Cover Letter snippet: &quot;{proposal.cover_letter?.substring(0, 100)}...&quot;
+                                            </p>
+                                            
+                                            {/* R10: Basic Tracking - Submission Date */}
+                                             <p className="text-xs text-gray-400 mt-2">
+                                                Submitted on: {new Date(proposal.createdAt).toLocaleString()} 
+                                            </p>
                                         </div>
                                         <span className={`text-xs font-semibold px-3 py-1 rounded-full capitalize ${statusMap[proposal.status.toLowerCase()] || 'bg-gray-300'}`}>
                                             {proposal.status}
@@ -236,28 +252,41 @@ function TenderManager() {
                                     </div>
                                     
                                     <div className="mt-4 pt-3 border-t flex space-x-3">
+                                        
+                                        {/* Dummy link/button for viewing full proposal documents (R7 attachment view) */}
+                                        <a 
+                                            // This endpoint must be implemented in the backend to deliver the proposal attachments
+                                            href={`/api/proposals/${proposal.id}/download-attachments`} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600"
+                                        >
+                                            View Full Proposal & Docs
+                                        </a>
+
+                                        {/* R8, R9 actions */}
                                         <button 
                                             onClick={() => handleProposalStatusUpdate(proposal.id, 'shortlisted')}
                                             className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Shortlist (2b)
+                                            Shortlist (R8)
                                         </button>
                                         <button 
                                             onClick={() => handleProposalStatusUpdate(proposal.id, 'awarded')}
                                             className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Award (2c)
+                                            Award (R9)
                                         </button>
                                         <button 
                                             onClick={() => handleProposalStatusUpdate(proposal.id, 'rejected')}
                                             className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
-                                            disabled={proposal.status === 'awarded' || proposal.status === 'rejected'}
+                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Reject (2c)
+                                            Reject (R9)
                                         </button>
-                                        {/* In a real app, there would be a link/button to view the proposal document */}
+                                        
                                     </div>
                                 </div>
                             ))}
