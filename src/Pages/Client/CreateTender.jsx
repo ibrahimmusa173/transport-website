@@ -1,3 +1,4 @@
+// src/Pages/Client/CreateTender.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createTender } from '../../api/tenderApi';

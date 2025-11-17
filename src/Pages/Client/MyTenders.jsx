@@ -1,8 +1,9 @@
+// src/Pages/Client/MyTenders.jsx
 import  { useEffect, useState } from 'react';
-// IMPORT closeTender and archiveTender
-import { getMyTenders, deleteTender, publishTender, closeTender, archiveTender } from '../../api/tenderApi'; 
+// IMPORT publishTender
+import { getMyTenders, deleteTender, publishTender } from '../../api/tenderApi'; 
 import { Link } from 'react-router-dom';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
 
 const statusColors = {
     draft: 'bg-gray-200 text-gray-800',
@@ -32,7 +33,7 @@ function MyTenders() {
         fetchTenders();
     }, []);
 
-    // Handler for publishing a draft tender
+    // New: Handler for publishing a draft tender
     const handlePublish = async (tenderId) => {
         if (!window.confirm("Are you sure you want to publish this tender? It will become visible to vendors.")) {
             return;
@@ -40,40 +41,13 @@ function MyTenders() {
         try {
             await publishTender(tenderId); 
             alert('Tender published successfully! Status is now Active.');
+            // Re-fetch the data to update the status in the UI
             fetchTenders(); 
         } catch (err) {
             alert(`Publication failed: ${err.message}`);
         }
     };
     
-    // 1e: Close the Tender
-    const handleClose = async (tenderId) => {
-        if (!window.confirm("Are you sure you want to close this tender? This will stop accepting proposals.")) {
-            return;
-        }
-        try {
-            await closeTender(tenderId);
-            alert('Tender closed successfully.');
-            fetchTenders(); 
-        } catch (err) {
-            alert(`Closure failed: ${err.message}`);
-        }
-    };
-
-    // 1f: Archive the Tender
-    const handleArchive = async (tenderId) => {
-        if (!window.confirm("Are you sure you want to archive this tender? It will be moved to history.")) {
-            return;
-        }
-        try {
-            await archiveTender(tenderId);
-            alert('Tender archived successfully.');
-            fetchTenders(); 
-        } catch (err) {
-            alert(`Archiving failed: ${err.message}`);
-        }
-    };
-
     // 1g: Delete the Tender
     const handleDelete = async (tenderId) => {
         if (!window.confirm("Are you sure you want to delete this tender? This action cannot be undone.")) {
@@ -101,7 +75,7 @@ function MyTenders() {
 
     return (
         <div className="p-8">
-            <DashboardLinkButton /> 
+            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
             <h1 className="text-3xl font-bold mb-6 text-indigo-600">My Tender Dashboard ({tenders.length})</h1>
             <Link to="/client/tenders/create" className="inline-block mb-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                 + Create New Tender
@@ -127,9 +101,9 @@ function MyTenders() {
                                         {tender.status.toUpperCase()}
                                     </span>
                                 </div>
-                                <div className="space-x-2 flex flex-wrap justify-end items-center">
+                                <div className="space-x-2">
                                     
-                                    {/* 1a: PUBLISH BUTTON (Only if Draft) */}
+                                    {/* ADDED PUBLISH BUTTON: Visible only if status is DRAFT */}
                                     {tender.status.toLowerCase() === 'draft' && (
                                         <button 
                                             onClick={() => handlePublish(tender.id)}
@@ -138,27 +112,9 @@ function MyTenders() {
                                             Publish Tender
                                         </button>
                                     )}
+                                    {/* END PUBLISH BUTTON */}
 
-                                    {/* 1e: CLOSE TENDER BUTTON (Only if Active) */}
-                                    {tender.status.toLowerCase() === 'active' && (
-                                        <button 
-                                            onClick={() => handleClose(tender.id)}
-                                            className="px-3 py-1 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700"
-                                        >
-                                            Close Tender
-                                        </button>
-                                    )}
 
-                                    {/* 1f: ARCHIVE TENDER BUTTON (Only if Closed) */}
-                                    {tender.status.toLowerCase() === 'closed' && (
-                                        <button 
-                                            onClick={() => handleArchive(tender.id)}
-                                            className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700"
-                                        >
-                                            Archive
-                                        </button>
-                                    )}
-                                    
                                     <Link 
                                         to={`/client/tenders/${tender.id}`}
                                         className="px-3 py-1 text-sm bg-indigo-500 text-white rounded hover:bg-indigo-600"
@@ -166,7 +122,6 @@ function MyTenders() {
                                         Manage & View Proposals
                                     </Link>
                                     
-                                    {/* 1g: DELETE BUTTON (Only if Draft or Active) */}
                                     {(tender.status.toLowerCase() === 'draft' || tender.status.toLowerCase() === 'active') && (
                                         <button 
                                             onClick={() => handleDelete(tender.id)}

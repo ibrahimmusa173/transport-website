@@ -1,3 +1,4 @@
+// src/Pages/Client/Guidelines.jsx
 import { useState, useEffect } from 'react';
 import { getTenderGuidelines } from '../../api/contentApi';
 import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
