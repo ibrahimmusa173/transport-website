@@ -1,13 +1,20 @@
+
 // src/api/contentApi.js
 import authenticatedFetch from './apiClient';
 
 /**
- * Fetches tender guidelines.
+ * Fetches tender guidelines (Client Read).
  * This route should ideally be accessible to clients (non-admins) for reading.
  * Assumes a backend endpoint like GET /api/content/guidelines exists.
  */
 export const getTenderGuidelines = async () => {
     return authenticatedFetch('/content/guidelines');
+};
+
+// NEW: Admin function to get all guidelines (Req 7-9 need a list/collection access)
+// API: GET /api/admin/content/guidelines
+export const getAllGuidelinesAdmin = async () => {
+    return authenticatedFetch('/admin/content/guidelines');
 };
 
 // ===================================

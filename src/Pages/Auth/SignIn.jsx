@@ -1,5 +1,5 @@
 
-import  { useState } from 'react';
+import  { useState, useEffect } from 'react'; // Import useEffect
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -13,11 +13,12 @@ function SignIn() {
     const { login, isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
 
-    // Redirect if already logged in
-    if (isAuthenticated) {
-        navigate('/dashboard');
-        return null;
-    }
+    // FIX: Use useEffect for redirection to avoid state update warning
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]); 
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,8 +30,7 @@ function SignIn() {
 
         try {
             await login(formData);
-            // If login is successful, AuthContext state updates and user is redirected to Dashboard
-            navigate('/dashboard');
+            // If login is successful, AuthContext state updates and the useEffect handles redirect
         } catch (err) {
             setStatusMessage({ message: err.message || 'Login failed. Check credentials.', type: 'error' });
         }

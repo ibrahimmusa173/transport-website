@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from 'react';
-import { getTenderGuidelines, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
+import { getAllGuidelinesAdmin, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; 
 
 function ContentManagement() {
     const [guidelines, setGuidelines] = useState([]);
@@ -14,8 +15,8 @@ function ContentManagement() {
     const fetchGuidelines = async () => {
         setLoading(true);
         try {
-            // Assuming the Admin fetch returns all guideline versions/documents
-            const data = await getTenderGuidelines(); 
+            // Use the dedicated admin listing API (Req 7, 8, 9 management)
+            const data = await getAllGuidelinesAdmin(); 
             const guidelinesArray = Array.isArray(data) ? data : (data ? [data] : []);
             setGuidelines(guidelinesArray);
         } catch (error) {

@@ -1,3 +1,4 @@
+
 // src/Pages/Dashboard.jsx
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -51,7 +52,8 @@ function Dashboard() {
                 setNotificationsError(null);
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
-                setNotificationsError('Failed to load notifications.');
+                // IMPROVED ERROR MESSAGE based on log
+                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my)');
             } finally {
                 setNotificationsLoading(false);
             }
@@ -59,11 +61,20 @@ function Dashboard() {
             // --- 2. Fetch Guidelines (Client Only) ---
             if (user.user_type === 'client') {
                  try {
-                    const guidelinesData = await getTenderGuidelines();
-                    setGuidelinesContent(guidelinesData.content ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
+                    let guidelinesData = await getTenderGuidelines();
+                    
+                    // Handle array response if the client read API returns a list
+                    if (Array.isArray(guidelinesData) && guidelinesData.length > 0) {
+                        guidelinesData = guidelinesData[0];
+                    }
+
+                    const contentExists = guidelinesData && guidelinesData.content;
+                    
+                    setGuidelinesContent(contentExists ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
                 } catch (err) {
                     console.error("Failed to fetch guidelines snippet:", err);
-                    setGuidelinesContent('Failed to load guidelines status.');
+                    // IMPROVED ERROR MESSAGE based on log
+                    setGuidelinesContent('Failed to load guidelines status. (Check API endpoint /api/content/guidelines)');
                 }
             } else {
                 setGuidelinesContent(''); // Clear for vendor/admin

@@ -1,5 +1,5 @@
 
-import  { useState } from 'react';
+import  { useState, useEffect } from 'react'; // Import useEffect
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -18,11 +18,12 @@ function SignUp() {
     const { register, isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
 
-    // Redirect if already logged in
-    if (isAuthenticated) {
-        navigate('/dashboard');
-        return null;
-    }
+    // FIX: Use useEffect for redirection to avoid state update warning
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
