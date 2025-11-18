@@ -236,50 +236,6 @@ export const fetchUserProfile = async (token) => {
 };
 </file>
 
-<file path="src/api/contentApi.js">
-// src/api/contentApi.js
-import authenticatedFetch from './apiClient';
-
-/**
- * Fetches tender guidelines.
- * This route should ideally be accessible to clients (non-admins) for reading.
- * Assumes a backend endpoint like GET /api/content/guidelines exists.
- */
-export const getTenderGuidelines = async () => {
-    return authenticatedFetch('/content/guidelines');
-};
-
-// ===================================
-// --- ADMIN Guidelines Management Functions (NEW) ---
-// ===================================
-
-// 7. Admins to create guidelines
-// API: POST /api/admin/content/guidelines
-export const createGuideline = async (guidelineData) => {
-    return authenticatedFetch('/admin/content/guidelines', {
-        method: 'POST',
-        body: JSON.stringify(guidelineData),
-    });
-};
-
-// 8. Admins to Edit guidelines
-// API: PUT /api/admin/content/guidelines/:id
-export const updateGuideline = async (guidelineId, guidelineData) => {
-    return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
-        method: 'PUT',
-        body: JSON.stringify(guidelineData),
-    });
-};
-
-// 9. Admins to Delete guidelines
-// API: DELETE /api/admin/content/guidelines/:id
-export const deleteGuideline = async (guidelineId) => {
-    return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
-        method: 'DELETE',
-    });
-};
-</file>
-
 <file path="src/api/notificationApi.js">
 // src/api/notificationApi.js
 import authenticatedFetch from './apiClient';
@@ -418,280 +374,6 @@ function DashboardLinkButton() {
 export default DashboardLinkButton;
 </file>
 
-<file path="src/Pages/Auth/SignIn.jsx">
-import  { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-
-function SignIn() {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
-
-    const { login, isAuthenticated, isLoading } = useAuth();
-    const navigate = useNavigate();
-
-    // Redirect if already logged in
-    if (isAuthenticated) {
-        navigate('/dashboard');
-        return null;
-    }
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setStatusMessage({ message: '', type: '' });
-
-        try {
-            await login(formData);
-            // If login is successful, AuthContext state updates and user is redirected to Dashboard
-            navigate('/dashboard');
-        } catch (err) {
-            setStatusMessage({ message: err.message || 'Login failed. Check credentials.', type: 'error' });
-        }
-    };
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-xl rounded-lg">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Sign in to your account
-                    </h2>
-                </div>
-
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {statusMessage.message && (
-                        <div className={`p-3 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                            {statusMessage.message}
-                        </div>
-                    )}
-
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="email-address" className="sr-only">Email address</label>
-                            <input
-                                id="email-address"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                        >
-                            {isLoading ? 'Signing In...' : 'Sign In'}
-                        </button>
-                    </div>
-                </form>
-                <div className="text-center">
-                    <p className="text-sm text-gray-600">
-                        Dont have an account? 
-                        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500 ml-1">
-                            Sign Up
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default SignIn;
-</file>
-
-<file path="src/Pages/Auth/SignUp.jsx">
-import  { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-
-const USER_TYPES = ['client', 'vendor'];
-
-function SignUp() {
-    const [formData, setFormData] = useState({
-        name: '',
-        company_name: '',
-        email: '',
-        password: '',
-        user_type: USER_TYPES[0], // Default to client
-    });
-    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
-    
-    const { register, isAuthenticated, isLoading } = useAuth();
-    const navigate = useNavigate();
-
-    // Redirect if already logged in
-    if (isAuthenticated) {
-        navigate('/dashboard');
-        return null;
-    }
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setStatusMessage({ message: '', type: '' });
-        
-        try {
-            await register(formData);
-            
-            // Assuming registration doesn't auto-log in, navigate to signin
-            setStatusMessage({ message: 'Registration successful! Please sign in.', type: 'success' });
-            setTimeout(() => navigate('/signin'), 1500); 
-
-        } catch (err) {
-            setStatusMessage({ message: err.message || 'Failed to register. Please try again.', type: 'error' });
-        }
-    };
-
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-xl rounded-lg">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Create your account
-                    </h2>
-                </div>
-                
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    
-                    {statusMessage.message && (
-                        <div className={`p-3 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                            {statusMessage.message}
-                        </div>
-                    )}
-
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div>
-                            <label htmlFor="name" className="sr-only">Name</label>
-                            <input
-                                id="name"
-                                name="name"
-                                type="text"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Full Name"
-                                value={formData.name}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="company_name" className="sr-only">Company Name</label>
-                            <input
-                                id="company_name"
-                                name="company_name"
-                                type="text"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
-                                placeholder="Company Name"
-                                value={formData.company_name}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className='mt-3'>
-                            <label htmlFor="email" className="sr-only">Email address</label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                placeholder="Email address"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="password" className="sr-only">Password</label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="new-password"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className='mt-3'>
-                            <label htmlFor="user_type" className="block text-sm font-medium text-gray-700">I am a:</label>
-                            <select
-                                id="user_type"
-                                name="user_type"
-                                required
-                                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                value={formData.user_type}
-                                onChange={handleChange}
-                            >
-                                {USER_TYPES.map(type => (
-                                    <option key={type} value={type}>
-                                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                        >
-                            {isLoading ? 'Registering...' : 'Sign up'}
-                        </button>
-                    </div>
-                </form>
-                <div className="text-center">
-                    <p className="text-sm text-gray-600">
-                        Already have an account? 
-                        <Link to="/signin" className="font-medium text-indigo-600 hover:text-indigo-500 ml-1">
-                            Sign In
-                        </Link>
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export default SignUp;
-</file>
-
 <file path="vite.config.js">
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -751,6 +433,56 @@ async function authenticatedFetch(endpoint, options = {}) {
 }
 
 export default authenticatedFetch;
+</file>
+
+<file path="src/api/contentApi.js">
+// src/api/contentApi.js
+import authenticatedFetch from './apiClient';
+
+/**
+ * Fetches tender guidelines (Client Read).
+ * This route should ideally be accessible to clients (non-admins) for reading.
+ * Assumes a backend endpoint like GET /api/content/guidelines exists.
+ */
+export const getTenderGuidelines = async () => {
+    return authenticatedFetch('/content/guidelines');
+};
+
+// NEW: Admin function to get all guidelines (Req 7-9 need a list/collection access)
+// API: GET /api/admin/content/guidelines
+export const getAllGuidelinesAdmin = async () => {
+    return authenticatedFetch('/admin/content/guidelines');
+};
+
+// ===================================
+// --- ADMIN Guidelines Management Functions (NEW) ---
+// ===================================
+
+// 7. Admins to create guidelines
+// API: POST /api/admin/content/guidelines
+export const createGuideline = async (guidelineData) => {
+    return authenticatedFetch('/admin/content/guidelines', {
+        method: 'POST',
+        body: JSON.stringify(guidelineData),
+    });
+};
+
+// 8. Admins to Edit guidelines
+// API: PUT /api/admin/content/guidelines/:id
+export const updateGuideline = async (guidelineId, guidelineData) => {
+    return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
+        method: 'PUT',
+        body: JSON.stringify(guidelineData),
+    });
+};
+
+// 9. Admins to Delete guidelines
+// API: DELETE /api/admin/content/guidelines/:id
+export const deleteGuideline = async (guidelineId) => {
+    return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
+        method: 'DELETE',
+    });
+};
 </file>
 
 <file path="src/api/proposalApi.js">
@@ -1265,193 +997,6 @@ ReportSection.propTypes = {
 export default AnalyticsDashboard;
 </file>
 
-<file path="src/Pages/Admin/ContentManagement.jsx">
-import { useEffect, useState } from 'react';
-import { getTenderGuidelines, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
-
-function ContentManagement() {
-    const [guidelines, setGuidelines] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState(false);
-    const [currentGuideline, setCurrentGuideline] = useState(null);
-    const [formContent, setFormContent] = useState('');
-    const [formTitle, setFormTitle] = useState('');
-    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
-
-    const fetchGuidelines = async () => {
-        setLoading(true);
-        try {
-            // Assuming the Admin fetch returns all guideline versions/documents
-            const data = await getTenderGuidelines(); 
-            const guidelinesArray = Array.isArray(data) ? data : (data ? [data] : []);
-            setGuidelines(guidelinesArray);
-        } catch (error) {
-            console.error("Failed to fetch guidelines:", error);
-            setStatusMessage({ message: 'Failed to load guidelines.', type: 'error' });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchGuidelines();
-    }, []);
-
-    const handleEdit = (guideline) => {
-        setCurrentGuideline(guideline);
-        setFormTitle(guideline.title || '');
-        setFormContent(guideline.content || '');
-        setIsEditing(true);
-        setStatusMessage({ message: '', type: '' });
-    };
-
-    const handleCreateNew = () => {
-        setCurrentGuideline(null);
-        setFormTitle('');
-        setFormContent('');
-        setIsEditing(true);
-        setStatusMessage({ message: '', type: '' });
-    };
-
-    const handleSave = async (e) => {
-        e.preventDefault();
-        const guidelineData = { title: formTitle, content: formContent, type: 'tender' }; 
-        
-        setStatusMessage({ message: 'Saving guideline...', type: 'info' });
-
-        try {
-            if (currentGuideline?._id) {
-                await updateGuideline(currentGuideline._id, guidelineData); // Req 8
-                setStatusMessage({ message: 'Guideline updated successfully!', type: 'success' });
-            } else {
-                await createGuideline(guidelineData); // Req 7
-                setStatusMessage({ message: 'Guideline created successfully!', type: 'success' });
-            }
-            setIsEditing(false);
-            await fetchGuidelines(); // Refresh list
-        } catch (error) {
-            console.error("Save failed:", error);
-            setStatusMessage({ message: error.message || 'Failed to save guideline.', type: 'error' });
-        }
-    };
-    
-    const handleDelete = async (guidelineId) => {
-        if (!window.confirm("Are you sure you want to delete this guideline?")) return;
-        setStatusMessage({ message: 'Deleting guideline...', type: 'info' });
-        try {
-            await deleteGuideline(guidelineId); // Req 9
-            setStatusMessage({ message: 'Guideline deleted successfully.', type: 'success' });
-            await fetchGuidelines(); // Refresh list
-        } catch (error) {
-             console.error("Delete failed:", error);
-            setStatusMessage({ message: error.message || 'Failed to delete guideline.', type: 'error' });
-        }
-    };
-
-    if (loading) return <div className="p-8">Loading Content Management...</div>;
-
-    return (
-        <div className="p-8">
-            <DashboardLinkButton /> {/* <-- ADDED */}
-            <h1 className="text-3xl font-bold mb-6 text-orange-700">Admin: Content Management (Tender Guidelines)</h1>
-            
-            {statusMessage.message && (
-                <div className={`p-3 mb-4 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                    {statusMessage.message}
-                </div>
-            )}
-
-            {isEditing ? (
-                <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-                    <h2 className="text-2xl font-semibold mb-4">{currentGuideline ? 'Edit Guideline' : 'Create New Guideline'}</h2>
-                    <form onSubmit={handleSave} className="space-y-4">
-                        <div>
-                            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-                            <input
-                                id="title"
-                                type="text"
-                                value={formTitle}
-                                onChange={(e) => setFormTitle(e.target.value)}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content (Markdown/HTML Support)</label>
-                            <textarea
-                                id="content"
-                                value={formContent}
-                                onChange={(e) => setFormContent(e.target.value)}
-                                rows="10"
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                                required
-                            ></textarea>
-                        </div>
-                        <div className="flex space-x-4">
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                            >
-                                Save Guideline
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setIsEditing(false)}
-                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            ) : (
-                <>
-                    <button
-                        onClick={handleCreateNew}
-                        className="px-4 py-2 mb-6 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                        Create New Guideline (Req 7)
-                    </button>
-                    
-                    <h2 className="text-2xl font-semibold mb-3 text-gray-800">Existing Guidelines</h2>
-                    {guidelines.length === 0 ? (
-                        <p className="text-gray-600">No guidelines currently defined.</p>
-                    ) : (
-                        <div className="space-y-4">
-                            {guidelines.map((g) => (
-                                <div key={g._id || g.id} className="p-4 border rounded-lg bg-white shadow-sm flex justify-between items-center">
-                                    <div>
-                                        <p className="text-lg font-medium">{g.title || 'Untitled Guideline'}</p>
-                                        <p className="text-sm text-gray-500">Last updated: {new Date(g.updatedAt || g.createdAt).toLocaleDateString()}</p>
-                                    </div>
-                                    <div className="space-x-2">
-                                        <button 
-                                            onClick={() => handleEdit(g)}
-                                            className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                                        >
-                                            Edit (Req 8)
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(g._id || g.id)}
-                                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-                                        >
-                                            Delete (Req 9)
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </>
-            )}
-        </div>
-    );
-}
-
-export default ContentManagement;
-</file>
-
 <file path="src/Pages/Admin/ProposalManagement.jsx">
 import { useEffect, useState } from 'react'; // Removed unused 'React' import
 import { getAllProposalsAdmin } from '../../api/proposalApi'; 
@@ -1687,6 +1232,281 @@ function TaxonomyManagement() {
 export default TaxonomyManagement;
 </file>
 
+<file path="src/Pages/Auth/SignIn.jsx">
+import  { useState, useEffect } from 'react'; // Import useEffect
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+
+function SignIn() {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
+    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
+
+    const { login, isAuthenticated, isLoading } = useAuth();
+    const navigate = useNavigate();
+
+    // FIX: Use useEffect for redirection to avoid state update warning
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]); 
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatusMessage({ message: '', type: '' });
+
+        try {
+            await login(formData);
+            // If login is successful, AuthContext state updates and the useEffect handles redirect
+        } catch (err) {
+            setStatusMessage({ message: err.message || 'Login failed. Check credentials.', type: 'error' });
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-xl rounded-lg">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Sign in to your account
+                    </h2>
+                </div>
+
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {statusMessage.message && (
+                        <div className={`p-3 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                            {statusMessage.message}
+                        </div>
+                    )}
+
+                    <div className="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            <label htmlFor="email-address" className="sr-only">Email address</label>
+                            <input
+                                id="email-address"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Email address"
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="sr-only">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="current-password"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Signing In...' : 'Sign In'}
+                        </button>
+                    </div>
+                </form>
+                <div className="text-center">
+                    <p className="text-sm text-gray-600">
+                        Dont have an account? 
+                        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500 ml-1">
+                            Sign Up
+                        </Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default SignIn;
+</file>
+
+<file path="src/Pages/Auth/SignUp.jsx">
+import  { useState, useEffect } from 'react'; // Import useEffect
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+
+const USER_TYPES = ['client', 'vendor'];
+
+function SignUp() {
+    const [formData, setFormData] = useState({
+        name: '',
+        company_name: '',
+        email: '',
+        password: '',
+        user_type: USER_TYPES[0], // Default to client
+    });
+    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
+    
+    const { register, isAuthenticated, isLoading } = useAuth();
+    const navigate = useNavigate();
+
+    // FIX: Use useEffect for redirection to avoid state update warning
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard');
+        }
+    }, [isAuthenticated, navigate]);
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setStatusMessage({ message: '', type: '' });
+        
+        try {
+            await register(formData);
+            
+            // Assuming registration doesn't auto-log in, navigate to signin
+            setStatusMessage({ message: 'Registration successful! Please sign in.', type: 'success' });
+            setTimeout(() => navigate('/signin'), 1500); 
+
+        } catch (err) {
+            setStatusMessage({ message: err.message || 'Failed to register. Please try again.', type: 'error' });
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 p-10 bg-white shadow-xl rounded-lg">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Create your account
+                    </h2>
+                </div>
+                
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    
+                    {statusMessage.message && (
+                        <div className={`p-3 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                            {statusMessage.message}
+                        </div>
+                    )}
+
+                    <div className="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            <label htmlFor="name" className="sr-only">Name</label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Full Name"
+                                value={formData.name}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="company_name" className="sr-only">Company Name</label>
+                            <input
+                                id="company_name"
+                                name="company_name"
+                                type="text"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
+                                placeholder="Company Name"
+                                value={formData.company_name}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className='mt-3'>
+                            <label htmlFor="email" className="sr-only">Email address</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                placeholder="Email address"
+                                value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="sr-only">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete="new-password"
+                                required
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm mt-3"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                            />
+                        </div>
+                        <div className='mt-3'>
+                            <label htmlFor="user_type" className="block text-sm font-medium text-gray-700">I am a:</label>
+                            <select
+                                id="user_type"
+                                name="user_type"
+                                required
+                                className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={formData.user_type}
+                                onChange={handleChange}
+                            >
+                                {USER_TYPES.map(type => (
+                                    <option key={type} value={type}>
+                                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                            {isLoading ? 'Registering...' : 'Sign up'}
+                        </button>
+                    </div>
+                </form>
+                <div className="text-center">
+                    <p className="text-sm text-gray-600">
+                        Already have an account? 
+                        <Link to="/signin" className="font-medium text-indigo-600 hover:text-indigo-500 ml-1">
+                            Sign In
+                        </Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default SignUp;
+</file>
+
 <file path="src/Pages/vendor/MyProposals.jsx">
 // src/Pages/Vendor/MyProposals.jsx
 import { useState, useEffect } from 'react';
@@ -1905,6 +1725,193 @@ img, a {
   }
   
 }
+</file>
+
+<file path="src/Pages/Admin/ContentManagement.jsx">
+import { useEffect, useState } from 'react';
+import { getAllGuidelinesAdmin, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; 
+
+function ContentManagement() {
+    const [guidelines, setGuidelines] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentGuideline, setCurrentGuideline] = useState(null);
+    const [formContent, setFormContent] = useState('');
+    const [formTitle, setFormTitle] = useState('');
+    const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
+
+    const fetchGuidelines = async () => {
+        setLoading(true);
+        try {
+            // Use the dedicated admin listing API (Req 7, 8, 9 management)
+            const data = await getAllGuidelinesAdmin(); 
+            const guidelinesArray = Array.isArray(data) ? data : (data ? [data] : []);
+            setGuidelines(guidelinesArray);
+        } catch (error) {
+            console.error("Failed to fetch guidelines:", error);
+            setStatusMessage({ message: 'Failed to load guidelines.', type: 'error' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchGuidelines();
+    }, []);
+
+    const handleEdit = (guideline) => {
+        setCurrentGuideline(guideline);
+        setFormTitle(guideline.title || '');
+        setFormContent(guideline.content || '');
+        setIsEditing(true);
+        setStatusMessage({ message: '', type: '' });
+    };
+
+    const handleCreateNew = () => {
+        setCurrentGuideline(null);
+        setFormTitle('');
+        setFormContent('');
+        setIsEditing(true);
+        setStatusMessage({ message: '', type: '' });
+    };
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        const guidelineData = { title: formTitle, content: formContent, type: 'tender' }; 
+        
+        setStatusMessage({ message: 'Saving guideline...', type: 'info' });
+
+        try {
+            if (currentGuideline?._id) {
+                await updateGuideline(currentGuideline._id, guidelineData); // Req 8
+                setStatusMessage({ message: 'Guideline updated successfully!', type: 'success' });
+            } else {
+                await createGuideline(guidelineData); // Req 7
+                setStatusMessage({ message: 'Guideline created successfully!', type: 'success' });
+            }
+            setIsEditing(false);
+            await fetchGuidelines(); // Refresh list
+        } catch (error) {
+            console.error("Save failed:", error);
+            setStatusMessage({ message: error.message || 'Failed to save guideline.', type: 'error' });
+        }
+    };
+    
+    const handleDelete = async (guidelineId) => {
+        if (!window.confirm("Are you sure you want to delete this guideline?")) return;
+        setStatusMessage({ message: 'Deleting guideline...', type: 'info' });
+        try {
+            await deleteGuideline(guidelineId); // Req 9
+            setStatusMessage({ message: 'Guideline deleted successfully.', type: 'success' });
+            await fetchGuidelines(); // Refresh list
+        } catch (error) {
+             console.error("Delete failed:", error);
+            setStatusMessage({ message: error.message || 'Failed to delete guideline.', type: 'error' });
+        }
+    };
+
+    if (loading) return <div className="p-8">Loading Content Management...</div>;
+
+    return (
+        <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
+            <h1 className="text-3xl font-bold mb-6 text-orange-700">Admin: Content Management (Tender Guidelines)</h1>
+            
+            {statusMessage.message && (
+                <div className={`p-3 mb-4 rounded text-sm ${statusMessage.type === 'error' ? 'bg-red-100 text-red-700' : statusMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                    {statusMessage.message}
+                </div>
+            )}
+
+            {isEditing ? (
+                <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h2 className="text-2xl font-semibold mb-4">{currentGuideline ? 'Edit Guideline' : 'Create New Guideline'}</h2>
+                    <form onSubmit={handleSave} className="space-y-4">
+                        <div>
+                            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
+                            <input
+                                id="title"
+                                type="text"
+                                value={formTitle}
+                                onChange={(e) => setFormTitle(e.target.value)}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="content" className="block text-sm font-medium text-gray-700">Content (Markdown/HTML Support)</label>
+                            <textarea
+                                id="content"
+                                value={formContent}
+                                onChange={(e) => setFormContent(e.target.value)}
+                                rows="10"
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                                required
+                            ></textarea>
+                        </div>
+                        <div className="flex space-x-4">
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                            >
+                                Save Guideline
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsEditing(false)}
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            ) : (
+                <>
+                    <button
+                        onClick={handleCreateNew}
+                        className="px-4 py-2 mb-6 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                        Create New Guideline (Req 7)
+                    </button>
+                    
+                    <h2 className="text-2xl font-semibold mb-3 text-gray-800">Existing Guidelines</h2>
+                    {guidelines.length === 0 ? (
+                        <p className="text-gray-600">No guidelines currently defined.</p>
+                    ) : (
+                        <div className="space-y-4">
+                            {guidelines.map((g) => (
+                                <div key={g._id || g.id} className="p-4 border rounded-lg bg-white shadow-sm flex justify-between items-center">
+                                    <div>
+                                        <p className="text-lg font-medium">{g.title || 'Untitled Guideline'}</p>
+                                        <p className="text-sm text-gray-500">Last updated: {new Date(g.updatedAt || g.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="space-x-2">
+                                        <button 
+                                            onClick={() => handleEdit(g)}
+                                            className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                        >
+                                            Edit (Req 8)
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(g._id || g.id)}
+                                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
+                                        >
+                                            Delete (Req 9)
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </>
+            )}
+        </div>
+    );
+}
+
+export default ContentManagement;
 </file>
 
 <file path="src/Pages/Admin/TenderManagement.jsx">
@@ -2198,94 +2205,6 @@ function UserManagement() {
     );
 }
 export default UserManagement;
-</file>
-
-<file path="src/Pages/Client/Guidelines.jsx">
-// src/Pages/Client/Guidelines.jsx
-import { useState, useEffect } from 'react';
-import { getTenderGuidelines } from '../../api/contentApi';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
-
-function Guidelines() {
-    const [guidelines, setGuidelines] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchGuidelines = async () => {
-            try {
-                const data = await getTenderGuidelines();
-                setGuidelines(data.content || 'No guidelines available yet.'); // Assuming 'content' field
-            } catch (err) {
-                setError(err.message || 'Failed to load guidelines.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchGuidelines();
-    }, []);
-
-    if (loading) return <div className="p-8 text-center">Loading guidelines...</div>;
-    if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
-
-    return (
-        <div className="p-8 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
-            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
-            <h1 className="text-3xl font-bold mb-6 text-indigo-700">Tender Creation Guidelines</h1>
-            <div className="prose max-w-none"> {/* Using 'prose' for basic markdown styling if content is markdown */}
-                {guidelines ? (
-                    typeof guidelines === 'string' ? (
-                        <p>{guidelines}</p> // Render as plain text
-                    ) : (
-                        // If guidelines is an object or structured data, you'd map over it
-                        // For simplicity, assuming it's a string for now.
-                        <div>
-                            {/* Example for structured content: */}
-                            {/* <h3>{guidelines.title}</h3>
-                            <p>{guidelines.introduction}</p>
-                            <ul>
-                                {guidelines.sections.map((section, index) => (
-                                    <li key={index}><strong>{section.heading}:</strong> {section.text}</li>
-                                ))}
-                            </ul> */}
-                            <p>Here are some detailed guidelines to help you create effective tender requests. Follow these best practices to attract the best vendors and proposals.</p>
-                            
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">1. Clear and Concise Title</h2>
-                            <p>Your tender title should clearly state the projects purpose. Avoid jargon and be specific. For example, instead of IT Project, use Development of an E-commerce Website with Payment Gateway Integration.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">2. Detailed Description</h2>
-                            <p>Provide a comprehensive overview of the project, including its objectives, scope, key deliverables, and desired outcomes. The more details you provide, the better vendors can understand your needs and tailor their proposals.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">3. Specify Category/Industry</h2>
-                            <p>Accurately categorize your tender to ensure it reaches relevant vendors. This helps in filtering and attracting specialists in the required field.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">4. Realistic Budget Range</h2>
-                            <p>While optional, providing a budget range helps vendors determine if the project aligns with their pricing structures. It also helps manage expectations and can reduce time spent on unsuitable proposals.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">5. Strict Submission Deadline</h2>
-                            <p>Set a clear and reasonable deadline. Ensure vendors have ample time to prepare a thorough proposal. Clearly communicate the date and time, including the time zone.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">6. Required Attachments</h2>
-                            <p>If you have detailed Request for Proposal (RFP) documents, technical specifications, or design mockups, attach them. This provides vendors with all necessary information to submit accurate and competitive proposals.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">7. Clear Contact Information</h2>
-                            <p>Provide a dedicated email address or contact person for inquiries. This ensures vendors can seek clarifications without issues, leading to better quality proposals.</p>
-
-                            <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">8. Evaluation Criteria</h2>
-                            <p>Though not a field in the creation form, consider internally how you will evaluate proposals. Communicating this to vendors (e.g., in attachments) can help them focus their submissions on what matters most to you.</p>
-
-                            <p className="mt-8 text-gray-600 italic">Following these guidelines will significantly improve the quality of proposals you receive and the success of your project.</p>
-                        </div>
-                    )
-                ) : (
-                    <p>No guidelines available yet.</p>
-                )}
-            </div>
-        </div>
-    );
-}
-
-export default Guidelines;
 </file>
 
 <file path="src/Pages/vendor/TenderDetails.jsx">
@@ -2877,6 +2796,104 @@ function CreateTender() {
 }
 
 export default CreateTender;
+</file>
+
+<file path="src/Pages/Client/Guidelines.jsx">
+// src/Pages/Client/Guidelines.jsx
+import { useState, useEffect } from 'react';
+import { getTenderGuidelines } from '../../api/contentApi';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // NEW IMPORT
+
+function Guidelines() {
+    const [guidelineText, setGuidelineText] = useState(null); // Stores dynamic content string
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchGuidelines = async () => {
+            try {
+                let data = await getTenderGuidelines();
+                
+                // Robustly handle array responses (if multiple exist, take the first/active one)
+                if (Array.isArray(data) && data.length > 0) {
+                    data = data[0]; 
+                }
+
+                // Check if the received object contains content
+                if (data && data.content) {
+                    setGuidelineText(data.content); 
+                } else {
+                    // Set to empty string if no content is found, triggering fallback
+                    setGuidelineText(''); 
+                }
+            } catch (err) {
+                console.error(err);
+                // IMPROVED ERROR MESSAGE
+                setError('Failed to load official guidelines. Please check if the backend API (/api/content/guidelines) is available.');
+                setGuidelineText(''); 
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchGuidelines();
+    }, []);
+
+    if (loading) return <div className="p-8 text-center">Loading guidelines...</div>;
+    if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+
+    const showDynamicContent = guidelineText;
+
+    return (
+        <div className="p-8 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
+            <DashboardLinkButton /> {/* ADDED BUTTON HERE */}
+            <h1 className="text-3xl font-bold mb-6 text-indigo-700">Tender Creation Guidelines</h1>
+            <div className="prose max-w-none"> {/* Using 'prose' for basic markdown styling if content is markdown */}
+                {/* Check if dynamic content was fetched (even if blank) */}
+                {guidelineText !== null ? (
+                    showDynamicContent ? (
+                        // RENDER DYNAMIC CONTENT from Admin
+                        <p className="whitespace-pre-wrap text-gray-700">{guidelineText}</p>
+                    ) : (
+                        <p className="text-gray-500">No official guidelines have been published yet by the Administrator.</p>
+                    )
+                ) : (
+                    // FALLBACK CONTENT (Displaying default content if API load failed)
+                    <div>
+                        <p>Here are some detailed guidelines to help you create effective tender requests. Follow these best practices to attract the best vendors and proposals.</p>
+                        
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">1. Clear and Concise Title</h2>
+                        <p>Your tender title should clearly state the projects purpose. Avoid jargon and be specific. For example, instead of IT Project, use Development of an E-commerce Website with Payment Gateway Integration.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">2. Detailed Description</h2>
+                        <p>Provide a comprehensive overview of the project, including its objectives, scope, key deliverables, and desired outcomes. The more details you provide, the better vendors can understand your needs and tailor their proposals.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">3. Specify Category/Industry</h2>
+                        <p>Accurately categorize your tender to ensure it reaches relevant vendors. This helps in filtering and attracting specialists in the required field.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">4. Realistic Budget Range</h2>
+                        <p>While optional, providing a budget range helps vendors determine if the project aligns with their pricing structures. It also helps manage expectations and can reduce time spent on unsuitable proposals.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">5. Strict Submission Deadline</h2>
+                        <p>Set a clear and reasonable deadline. Ensure vendors have ample time to prepare a thorough proposal. Clearly communicate the date and time, including the time zone.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">6. Required Attachments</h2>
+                        <p>If you have detailed Request for Proposal (RFP) documents, technical specifications, or design mockups, attach them. This provides vendors with all necessary information to submit accurate and competitive proposals.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">7. Clear Contact Information</h2>
+                        <p>Provide a dedicated email address or contact person for inquiries. This ensures vendors can seek clarifications without issues, leading to better quality proposals.</p>
+
+                        <h2 className="text-2xl font-semibold mt-6 mb-3 text-gray-800">8. Evaluation Criteria</h2>
+                        <p>Though not a field in the creation form, consider internally how you will evaluate proposals. Communicating this to vendors (e.g., in attachments) can help them focus their submissions on what matters most to you.</p>
+
+                        <p className="mt-8 text-gray-600 italic">Following these guidelines will significantly improve the quality of proposals you receive and the success of your project.</p>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default Guidelines;
 </file>
 
 <file path="src/Pages/vendor/TenderList.jsx">
@@ -3758,7 +3775,8 @@ function Dashboard() {
                 setNotificationsError(null);
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
-                setNotificationsError('Failed to load notifications.');
+                // IMPROVED ERROR MESSAGE based on log
+                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my)');
             } finally {
                 setNotificationsLoading(false);
             }
@@ -3766,11 +3784,20 @@ function Dashboard() {
             // --- 2. Fetch Guidelines (Client Only) ---
             if (user.user_type === 'client') {
                  try {
-                    const guidelinesData = await getTenderGuidelines();
-                    setGuidelinesContent(guidelinesData.content ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
+                    let guidelinesData = await getTenderGuidelines();
+                    
+                    // Handle array response if the client read API returns a list
+                    if (Array.isArray(guidelinesData) && guidelinesData.length > 0) {
+                        guidelinesData = guidelinesData[0];
+                    }
+
+                    const contentExists = guidelinesData && guidelinesData.content;
+                    
+                    setGuidelinesContent(contentExists ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
                 } catch (err) {
                     console.error("Failed to fetch guidelines snippet:", err);
-                    setGuidelinesContent('Failed to load guidelines status.');
+                    // IMPROVED ERROR MESSAGE based on log
+                    setGuidelinesContent('Failed to load guidelines status. (Check API endpoint /api/content/guidelines)');
                 }
             } else {
                 setGuidelinesContent(''); // Clear for vendor/admin
