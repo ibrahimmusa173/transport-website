@@ -5,7 +5,7 @@ import authenticatedFetch from './apiClient';
 // --- VENDOR Functionalities ---
 // ===================================
 
-// 2a) Submit Proposal (Accepts FormData containing text fields and files)
+// 1) Submit Proposal (Accepts FormData containing text fields and files)
 // API: POST /api/proposals
 export const submitProposal = (formData) => {
     // authenticatedFetch handles setting the body and headers for FormData
@@ -15,13 +15,13 @@ export const submitProposal = (formData) => {
     });
 };
 
-// 2b) View a dashboard of their submitted proposals
+// 2a) View a dashboard of their submitted proposals
 // API: GET /api/proposals/my-proposals
 export const getMyProposals = () => {
     return authenticatedFetch(`/proposals/my-proposals`);
 };
 
-// NEW: Withdraw Proposal (Requirement 5 from previous context)
+// 3) Withdraw Proposal
 // API: PATCH /api/proposals/:proposalId/status
 export const withdrawProposal = (proposalId) => {
     return authenticatedFetch(`/proposals/${proposalId}/status`, {
@@ -35,12 +35,14 @@ export const withdrawProposal = (proposalId) => {
 // --- CLIENT Functionalities ---
 // ===================================
 
-// View proposals for a specific tender (Used by Client to review submissions, also used by Admin Req 6)
+// 4) View proposals for a specific tender (Client)
+// API: GET /api/proposals/tender/:id
 export const getProposalsByTender = (tenderId) => {
-    // API: GET /api/proposals/tender/:id
     return authenticatedFetch(`/proposals/tender/${tenderId}`);
 };
 
+// 5 & 6) Update proposal status (Shortlist/Reject/Award)
+// API: PATCH /api/proposals/:proposalId/status
 export const updateProposalStatus = (proposalId, status) => {
     return authenticatedFetch(`/proposals/${proposalId}/status`, {
         method: 'PATCH', 
@@ -53,7 +55,7 @@ export const updateProposalStatus = (proposalId, status) => {
 // --- ADMIN Proposal Management Functions ---
 // ===================================
 
-// 1. The system shall allow Admins to view all proposals submitted on the platform. (Req 5)
+// 8) The system shall allow Admins to view all proposals submitted on the platform.
 // API: GET /api/proposals/admin/all
 export const getAllProposalsAdmin = () => {
     return authenticatedFetch(`/proposals/admin/all`);

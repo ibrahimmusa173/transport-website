@@ -9,6 +9,7 @@ function ProposalManagement() {
     useEffect(() => {
         const fetchProposals = async () => {
             try {
+                // Req 8: Fetch all proposals for Admin oversight
                 const data = await getAllProposalsAdmin();
                 setProposals(data);
             } catch (error) {
@@ -32,7 +33,7 @@ function ProposalManagement() {
     return (
         <div className="p-8">
             <DashboardLinkButton /> {/* <-- ADDED */}
-            <h1 className="text-3xl font-bold mb-6 text-purple-700">Admin: Proposal Management</h1>
+            <h1 className="text-3xl font-bold mb-6 text-purple-700">Admin: Proposal Management (Req 8)</h1>
             <p className="mb-6 text-gray-600">Viewing all submitted proposals on the platform.</p>
             
             <div className="space-y-4">

@@ -51,14 +51,14 @@ function TenderDetails() {
         setSubmissionStatus('Submitting...');
         setError(null);
         
-        // 1. Create FormData object (Requirement 3: Multi-part submission)
+        // 1. Create FormData object (Req 1 fields)
         const formData = new FormData();
         formData.append('tender_id', tenderId);
         formData.append('cover_letter', proposal.cover_letter);
         formData.append('proposed_solution', proposal.proposed_solution);
         formData.append('pricing', proposal.pricing); 
 
-        // 2. Append attachments (Requirement 3: Attachments)
+        // 2. Append attachments
         attachments.forEach((file) => {
             formData.append('attachments', file); // 'attachments' must match backend field name
         });

@@ -5,12 +5,14 @@ import { Link } from 'react-router-dom';
 import DashboardLinkButton from '../../components/DashboardLinkButton'; // Import the new component
 
 
+
 const statusColors = {
     submitted: 'bg-blue-100 text-blue-800',
     viewed: 'bg-yellow-100 text-yellow-800',
     shortlisted: 'bg-purple-100 text-purple-800',
     rejected: 'bg-red-100 text-red-800',
-    awarded: 'bg-green-100 text-green-800 font-bold',
+    
+    accepted: 'bg-green-100 text-green-800 font-bold',
     withdrawn: 'bg-gray-200 text-gray-700 italic', // New status color
 };
 
@@ -22,7 +24,7 @@ function MyProposals() {
 
     const fetchProposals = async () => {
         try {
-            // Requirement 4: View dashboard of submitted proposals and status
+            // Requirement 2a: View dashboard of submitted proposals and status
             const data = await getMyProposals();
             setProposals(data);
         } catch (err) {
@@ -36,7 +38,7 @@ function MyProposals() {
         fetchProposals();
     }, []);
     
-    // Handle Proposal Withdrawal (Requirement 5)
+    // Handle Proposal Withdrawal (Req 3)
     const handleWithdraw = async (proposalId) => {
         if (!window.confirm("Are you sure you want to withdraw this proposal? This action cannot be undone.")) {
             return;
