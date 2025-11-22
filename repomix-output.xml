@@ -241,8 +241,8 @@ export const fetchUserProfile = async (token) => {
 import authenticatedFetch from './apiClient';
 
 /**
- * Fetches notifications for the authenticated client.
- * Assumes a backend endpoint like GET /api/notifications/my exists.
+ * Fetches notifications for the authenticated user (Client or Vendor).
+ * API: GET /api/notifications/my
  */
 export const getMyNotifications = async () => {
     return authenticatedFetch('/notifications/my');
@@ -250,10 +250,29 @@ export const getMyNotifications = async () => {
 
 /**
  * Marks a specific notification as read.
- * Assumes a backend endpoint like PATCH /api/notifications/:id/read exists.
+ * API: PATCH /api/notifications/mark-read/:id
  */
 export const markNotificationAsRead = async (notificationId) => {
-    return authenticatedFetch(`/notifications/${notificationId}/read`, {
+    // Implementing the requested endpoint structure: /api/notifications/mark-read/0
+    return authenticatedFetch(`/notifications/mark-read/${notificationId}`, {
+        method: 'PATCH',
+    });
+};
+
+/**
+ * Fetches the count of unread notifications for the authenticated user.
+ * API: GET /api/notifications/unread-count
+ */
+export const getUnreadNotificationCount = async () => {
+    return authenticatedFetch('/notifications/unread-count');
+};
+
+/**
+ * Marks ALL notifications for the authenticated user as read.
+ * API: PATCH /api/notifications/mark-all-read
+ */
+export const markAllNotificationsAsRead = async () => {
+    return authenticatedFetch('/notifications/mark-all-read', {
         method: 'PATCH',
     });
 };
@@ -421,7 +440,15 @@ async function authenticatedFetch(endpoint, options = {}) {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        // Check if the response body is available and parseable, otherwise return a default error.
+        const contentType = response.headers.get("content-type");
+        let errorData = { message: `HTTP error! status: ${response.status}` };
+        
+        if (contentType && contentType.includes("application/json")) {
+            // Attempt to parse JSON response for detailed error message
+            errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
+        }
+        
         throw new Error(errorData.message || `API Error (${response.status})`);
     }
 
@@ -482,75 +509,6 @@ export const deleteGuideline = async (guidelineId) => {
     return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
         method: 'DELETE',
     });
-};
-</file>
-
-<file path="src/api/proposalApi.js">
-// src/api/proposalApi.js
-import authenticatedFetch from './apiClient';
-
-// ===================================
-// --- VENDOR Functionalities ---
-// ===================================
-
-// 2a) Submit Proposal (Accepts FormData containing text fields and files)
-// API: POST /api/proposals
-export const submitProposal = (formData) => {
-    // authenticatedFetch handles setting the body and headers for FormData
-    return authenticatedFetch(`/proposals`, {
-        method: 'POST',
-        body: formData, 
-    });
-};
-
-// 2b) View a dashboard of their submitted proposals
-// API: GET /api/proposals/my-proposals
-export const getMyProposals = () => {
-    return authenticatedFetch(`/proposals/my-proposals`);
-};
-
-// NEW: Withdraw Proposal (Requirement 5 from previous context)
-// API: PATCH /api/proposals/:proposalId/status
-export const withdrawProposal = (proposalId) => {
-    return authenticatedFetch(`/proposals/${proposalId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: "withdrawn" }),
-    });
-};
-
-
-// ===================================
-// --- CLIENT Functionalities ---
-// ===================================
-
-// View proposals for a specific tender (Used by Client to review submissions, also used by Admin Req 6)
-export const getProposalsByTender = (tenderId) => {
-    // API: GET /api/proposals/tender/:id
-    return authenticatedFetch(`/proposals/tender/${tenderId}`);
-};
-
-export const updateProposalStatus = (proposalId, status) => {
-    return authenticatedFetch(`/proposals/${proposalId}/status`, {
-        method: 'PATCH', 
-        body: JSON.stringify({ status }),
-    });
-};
-
-
-// ===================================
-// --- ADMIN Proposal Management Functions ---
-// ===================================
-
-// 1. The system shall allow Admins to view all proposals submitted on the platform. (Req 5)
-// API: GET /api/proposals/admin/all
-export const getAllProposalsAdmin = () => {
-    return authenticatedFetch(`/proposals/admin/all`);
-};
-
-// 2. View Specific Proposals (for a given tender). (Req 6)
-// Note: We use the same function as the Client access, relying on Admin privileges to fetch all data.
-export const getProposalsForTenderAdmin = (tenderId) => {
-    return getProposalsByTender(tenderId);
 };
 </file>
 
@@ -995,66 +953,6 @@ ReportSection.propTypes = {
 };
 
 export default AnalyticsDashboard;
-</file>
-
-<file path="src/Pages/Admin/ProposalManagement.jsx">
-import { useEffect, useState } from 'react'; // Removed unused 'React' import
-import { getAllProposalsAdmin } from '../../api/proposalApi'; 
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
-
-function ProposalManagement() {
-    const [proposals, setProposals] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchProposals = async () => {
-            try {
-                const data = await getAllProposalsAdmin();
-                setProposals(data);
-            } catch (error) {
-                console.error("Failed to fetch proposals:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProposals();
-    }, []);
-
-    if (loading) return <div className="p-8">Loading proposals...</div>;
-    
-    if (proposals.length === 0) return (
-        <div className="p-8">
-            <DashboardLinkButton /> {/* Added here for no content case */}
-            No proposals found.
-        </div>
-    );
-
-    return (
-        <div className="p-8">
-            <DashboardLinkButton /> {/* <-- ADDED */}
-            <h1 className="text-3xl font-bold mb-6 text-purple-700">Admin: Proposal Management</h1>
-            <p className="mb-6 text-gray-600">Viewing all submitted proposals on the platform.</p>
-            
-            <div className="space-y-4">
-                {proposals.map((proposal) => (
-                    <div key={proposal._id} className="p-4 border rounded-lg shadow-sm bg-white">
-                        <h2 className="text-xl font-semibold text-gray-800">Proposal for: {proposal.tenderTitle || 'Unknown Tender'}</h2>
-                        <p className="text-sm text-gray-500">Vendor ID: {proposal.vendorId}</p>
-                        <p className="mt-2 text-gray-700">Budget: ${proposal.proposedBudget ? proposal.proposedBudget.toLocaleString() : 'N/A'}</p>
-                        <p className="mt-1 text-gray-700">Status: <span className="font-medium text-purple-600">{proposal.status}</span></p>
-
-                        {/* Example Admin Actions */}
-                        <div className="mt-4 space-x-2">
-                            <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">View Proposal</button>
-                        </div>
-                    </div>
-                ))}
-            </div>
-            
-        </div>
-    );
-}
-export default ProposalManagement;
 </file>
 
 <file path="src/Pages/Admin/TaxonomyManagement.jsx">
@@ -1507,143 +1405,75 @@ function SignUp() {
 export default SignUp;
 </file>
 
-<file path="src/Pages/vendor/MyProposals.jsx">
-// src/Pages/Vendor/MyProposals.jsx
-import { useState, useEffect } from 'react';
-import { getMyProposals, withdrawProposal } from '../../api/proposalApi';
-import { Link } from 'react-router-dom';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // Import the new component
+<file path="src/api/proposalApi.js">
+// src/api/proposalApi.js
+import authenticatedFetch from './apiClient';
 
+// ===================================
+// --- VENDOR Functionalities ---
+// ===================================
 
-const statusColors = {
-    submitted: 'bg-blue-100 text-blue-800',
-    viewed: 'bg-yellow-100 text-yellow-800',
-    shortlisted: 'bg-purple-100 text-purple-800',
-    rejected: 'bg-red-100 text-red-800',
-    awarded: 'bg-green-100 text-green-800 font-bold',
-    withdrawn: 'bg-gray-200 text-gray-700 italic', // New status color
+// 1) Submit Proposal (Accepts FormData containing text fields and files)
+// API: POST /api/proposals
+export const submitProposal = (formData) => {
+    // authenticatedFetch handles setting the body and headers for FormData
+    return authenticatedFetch(`/proposals`, {
+        method: 'POST',
+        body: formData, 
+    });
 };
 
-function MyProposals() {
-    const [proposals, setProposals] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [statusMessage, setStatusMessage] = useState({}); // To hold success/error messages per action
+// 2a) View a dashboard of their submitted proposals
+// API: GET /api/proposals/my-proposals
+export const getMyProposals = () => {
+    return authenticatedFetch(`/proposals/my-proposals`);
+};
 
-    const fetchProposals = async () => {
-        try {
-            // Requirement 4: View dashboard of submitted proposals and status
-            const data = await getMyProposals();
-            setProposals(data);
-        } catch (err) {
-            setError('Failed to fetch your proposals dashboard.');
-        } finally {
-            setLoading(false);
-        }
-    };
+// 3) Withdraw Proposal
+// API: PATCH /api/proposals/:proposalId/status
+export const withdrawProposal = (proposalId) => {
+    return authenticatedFetch(`/proposals/${proposalId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: "withdrawn" }),
+    });
+};
 
-    useEffect(() => {
-        fetchProposals();
-    }, []);
-    
-    // Handle Proposal Withdrawal (Requirement 5)
-    const handleWithdraw = async (proposalId) => {
-        if (!window.confirm("Are you sure you want to withdraw this proposal? This action cannot be undone.")) {
-            return;
-        }
 
-        setStatusMessage(prev => ({ ...prev, [proposalId]: 'Withdrawing...' }));
+// ===================================
+// --- CLIENT Functionalities ---
+// ===================================
 
-        try {
-            await withdrawProposal(proposalId); 
-            // Update the local state instantly
-            setProposals(prev => 
-                prev.map(p => 
-                    p.proposal_id === proposalId 
-                        ? { ...p, status: 'Withdrawn' } 
-                        : p
-                )
-            );
-            setStatusMessage(prev => ({ ...prev, [proposalId]: 'Proposal successfully withdrawn.' }));
+// 4) View proposals for a specific tender (Client)
+// API: GET /api/proposals/tender/:id
+export const getProposalsByTender = (tenderId) => {
+    return authenticatedFetch(`/proposals/tender/${tenderId}`);
+};
 
-        } catch (err) {
-            console.error("Withdraw failed:", err);
-            setStatusMessage(prev => ({ ...prev, [proposalId]: err.message || 'Failed to withdraw proposal.' }));
-        }
-    };
+// 5 & 6) Update proposal status (Shortlist/Reject/Award)
+// API: PATCH /api/proposals/:proposalId/status
+export const updateProposalStatus = (proposalId, status) => {
+    return authenticatedFetch(`/proposals/${proposalId}/status`, {
+        method: 'PATCH', 
+        body: JSON.stringify({ status }),
+    });
+};
 
-    if (loading) return <div className="p-8">Loading proposals dashboard...</div>;
-    if (error) return <div className="p-8 text-red-500">{error}</div>;
 
-    return (
-        <div className="p-8 max-w-5xl mx-auto">
-            <DashboardLinkButton /> {/* ADDED BUTTON */}
-            
-            <h1 className="text-3xl font-bold mb-8 text-green-700">My Submitted Proposals</h1>
-            
-            {proposals.length === 0 ? (
-                <p className="text-lg text-gray-500">You have not submitted any proposals yet. <Link to="/vendor/tenders" className='text-green-600 hover:underline'>Find Tenders now.</Link></p>
-            ) : (
-                <div className="space-y-6">
-                    {proposals.map((proposal) => {
-                        const currentStatus = proposal.status?.toLowerCase() || 'submitted';
-                        // Allow withdrawal only if status is submitted (assuming deadline hasn't passed)
-                        const isWithdrawable = currentStatus === 'submitted'; 
-                        
-                        return (
-                            <div key={proposal.proposal_id} className="p-6 border rounded-xl shadow-lg bg-white">
-                                <div className="flex justify-between items-start mb-3 border-b pb-2">
-                                    <h2 className="text-xl font-semibold text-gray-900">
-                                        Proposal for: {proposal.tender_title || `Tender ID: ${proposal.tender_id}`}
-                                    </h2>
-                                    <span 
-                                        className={`px-3 py-1 text-sm rounded-full capitalize ${statusColors[currentStatus] || 'bg-gray-100 text-gray-800'}`}
-                                    >
-                                        {currentStatus}
-                                    </span>
-                                </div>
-                                
-                                {statusMessage[proposal.proposal_id] && (
-                                    <p className={`text-sm mb-2 ${statusMessage[proposal.proposal_id].includes('successfully') ? 'text-green-600' : statusMessage[proposal.proposal_id].includes('Withdrawing') ? 'text-yellow-600' : 'text-red-500'}`}>
-                                        {statusMessage[proposal.proposal_id]}
-                                    </p>
-                                )}
+// ===================================
+// --- ADMIN Proposal Management Functions ---
+// ===================================
 
-                                <p className="text-gray-700 mb-2">
-                                    <span className="font-medium">Pricing:</span> {proposal.pricing ? `$${parseFloat(proposal.pricing).toLocaleString()}` : 'N/A'}
-                                </p>
-                                <p className="text-sm text-gray-500 italic truncate mb-4">
-                                    Cover Letter snippet: &quot;{proposal.cover_letter?.substring(0, 80)}...&quot;
-                                </p>
-                                
-                                <div className="flex space-x-4 items-center">
-                                    {isWithdrawable && (
-                                        <button
-                                            onClick={() => handleWithdraw(proposal.proposal_id)}
-                                            className="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:opacity-50"
-                                            disabled={statusMessage[proposal.proposal_id]?.includes('Withdrawing')}
-                                        >
-                                            Withdraw Proposal
-                                        </button>
-                                    )}
-                                    
-                                    <Link 
-                                        to={`/vendor/tenders/${proposal.tender_id}`}
-                                        className="text-sm text-indigo-600 hover:underline"
-                                    >
-                                        View Original Tender
-                                    </Link>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
-        </div>
-    );
-}
+// 8) The system shall allow Admins to view all proposals submitted on the platform.
+// API: GET /api/proposals/admin/all
+export const getAllProposalsAdmin = () => {
+    return authenticatedFetch(`/proposals/admin/all`);
+};
 
-export default MyProposals;
+// 2. View Specific Proposals (for a given tender). (Req 6)
+// Note: We use the same function as the Client access, relying on Admin privileges to fetch all data.
+export const getProposalsForTenderAdmin = (tenderId) => {
+    return getProposalsByTender(tenderId);
+};
 </file>
 
 <file path="src/index.css">
@@ -1912,6 +1742,67 @@ function ContentManagement() {
 }
 
 export default ContentManagement;
+</file>
+
+<file path="src/Pages/Admin/ProposalManagement.jsx">
+import { useEffect, useState } from 'react'; // Removed unused 'React' import
+import { getAllProposalsAdmin } from '../../api/proposalApi'; 
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
+
+function ProposalManagement() {
+    const [proposals, setProposals] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProposals = async () => {
+            try {
+                // Req 8: Fetch all proposals for Admin oversight
+                const data = await getAllProposalsAdmin();
+                setProposals(data);
+            } catch (error) {
+                console.error("Failed to fetch proposals:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProposals();
+    }, []);
+
+    if (loading) return <div className="p-8">Loading proposals...</div>;
+    
+    if (proposals.length === 0) return (
+        <div className="p-8">
+            <DashboardLinkButton /> {/* Added here for no content case */}
+            No proposals found.
+        </div>
+    );
+
+    return (
+        <div className="p-8">
+            <DashboardLinkButton /> {/* <-- ADDED */}
+            <h1 className="text-3xl font-bold mb-6 text-purple-700">Admin: Proposal Management (Req 8)</h1>
+            <p className="mb-6 text-gray-600">Viewing all submitted proposals on the platform.</p>
+            
+            <div className="space-y-4">
+                {proposals.map((proposal) => (
+                    <div key={proposal._id} className="p-4 border rounded-lg shadow-sm bg-white">
+                        <h2 className="text-xl font-semibold text-gray-800">Proposal for: {proposal.tenderTitle || 'Unknown Tender'}</h2>
+                        <p className="text-sm text-gray-500">Vendor ID: {proposal.vendorId}</p>
+                        <p className="mt-2 text-gray-700">Budget: ${proposal.proposedBudget ? proposal.proposedBudget.toLocaleString() : 'N/A'}</p>
+                        <p className="mt-1 text-gray-700">Status: <span className="font-medium text-purple-600">{proposal.status}</span></p>
+
+                        {/* Example Admin Actions */}
+                        <div className="mt-4 space-x-2">
+                            <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">View Proposal</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            
+        </div>
+    );
+}
+export default ProposalManagement;
 </file>
 
 <file path="src/Pages/Admin/TenderManagement.jsx">
@@ -2207,223 +2098,145 @@ function UserManagement() {
 export default UserManagement;
 </file>
 
-<file path="src/Pages/vendor/TenderDetails.jsx">
-// src/Pages/Vendor/TenderDetails.jsx
-import  { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
-import { getTenderDetails } from '../../api/tenderApi';
-import { submitProposal } from '../../api/proposalApi';
+<file path="src/Pages/vendor/MyProposals.jsx">
+// src/Pages/Vendor/MyProposals.jsx
+import { useState, useEffect } from 'react';
+import { getMyProposals, withdrawProposal } from '../../api/proposalApi';
+import { Link } from 'react-router-dom';
 import DashboardLinkButton from '../../components/DashboardLinkButton'; // Import the new component
 
 
-function TenderDetails() {
-    const { tenderId } = useParams();
-    const [tender, setTender] = useState(null);
+
+const statusColors = {
+    submitted: 'bg-blue-100 text-blue-800',
+    viewed: 'bg-yellow-100 text-yellow-800',
+    shortlisted: 'bg-purple-100 text-purple-800',
+    rejected: 'bg-red-100 text-red-800',
+    
+    accepted: 'bg-green-100 text-green-800 font-bold',
+    withdrawn: 'bg-gray-200 text-gray-700 italic', // New status color
+};
+
+function MyProposals() {
+    const [proposals, setProposals] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [submissionStatus, setSubmissionStatus] = useState('');
-    
-    // State to hold text inputs
-    const [proposal, setProposal] = useState({
-        cover_letter: '',
-        proposed_solution: '',
-        pricing: '',
-    });
-    // State to hold files
-    const [attachments, setAttachments] = useState([]);
-    const fileInputRef = useRef(null); // Ref to clear the file input
+    const [statusMessage, setStatusMessage] = useState({}); // To hold success/error messages per action
 
-    useEffect(() => {
-        const fetchTender = async () => {
-            try {
-                const data = await getTenderDetails(tenderId);
-                setTender(data);
-            } catch (err) {
-                setError('Failed to load tender details. It might be closed or unauthorized.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchTender();
-    }, [tenderId]);
-
-    const handleProposalChange = (e) => {
-        setProposal(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
-    
-    const handleFileChange = (e) => {
-        // e.target.files is a FileList object
-        setAttachments(Array.from(e.target.files));
-    };
-
-    const handleProposalSubmit = async (e) => {
-        e.preventDefault();
-        setSubmissionStatus('Submitting...');
-        setError(null);
-        
-        // 1. Create FormData object (Requirement 3: Multi-part submission)
-        const formData = new FormData();
-        formData.append('tender_id', tenderId);
-        formData.append('cover_letter', proposal.cover_letter);
-        formData.append('proposed_solution', proposal.proposed_solution);
-        formData.append('pricing', proposal.pricing); 
-
-        // 2. Append attachments (Requirement 3: Attachments)
-        attachments.forEach((file) => {
-            formData.append('attachments', file); // 'attachments' must match backend field name
-        });
-
+    const fetchProposals = async () => {
         try {
-            await submitProposal(formData); 
-            setSubmissionStatus('Proposal submitted successfully!');
-            
-            // Reset form
-            setProposal({ cover_letter: '', proposed_solution: '', pricing: '' });
-            setAttachments([]);
-            if (fileInputRef.current) {
-                fileInputRef.current.value = ""; // Clear file input
-            }
-
+            // Requirement 2a: View dashboard of submitted proposals and status
+            const data = await getMyProposals();
+            setProposals(data);
         } catch (err) {
-            console.error(err);
-            setError(err.message || 'Failed to submit proposal. Please check inputs and file sizes.');
-            setSubmissionStatus('Submission failed.');
+            setError('Failed to fetch your proposals dashboard.');
+        } finally {
+            setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchProposals();
+    }, []);
     
-    const formatCurrency = (amount) => {
-        if (!amount) return 'N/A';
-        return `$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Handle Proposal Withdrawal (Req 3)
+    const handleWithdraw = async (proposalId) => {
+        if (!window.confirm("Are you sure you want to withdraw this proposal? This action cannot be undone.")) {
+            return;
+        }
+
+        setStatusMessage(prev => ({ ...prev, [proposalId]: 'Withdrawing...' }));
+
+        try {
+            await withdrawProposal(proposalId); 
+            // Update the local state instantly
+            setProposals(prev => 
+                prev.map(p => 
+                    p.proposal_id === proposalId 
+                        ? { ...p, status: 'Withdrawn' } 
+                        : p
+                )
+            );
+            setStatusMessage(prev => ({ ...prev, [proposalId]: 'Proposal successfully withdrawn.' }));
+
+        } catch (err) {
+            console.error("Withdraw failed:", err);
+            setStatusMessage(prev => ({ ...prev, [proposalId]: err.message || 'Failed to withdraw proposal.' }));
+        }
     };
 
-
-    if (loading) return <div className="p-8">Loading Tender...</div>;
+    if (loading) return <div className="p-8">Loading proposals dashboard...</div>;
     if (error) return <div className="p-8 text-red-500">{error}</div>;
-    if (!tender) return <div className="p-8 text-red-500">Tender not found.</div>;
-
-    // Check if the tender is still active for submission
-    const isTenderActive = tender.status?.toLowerCase() === 'active' && new Date(tender.deadline) > new Date();
-
-    // Determine the reason if inactive (IMPROVED ERROR CLARITY)
-    let inactiveReason = '';
-    if (tender.status?.toLowerCase() !== 'active') {
-        inactiveReason = `Status is '${tender.status}' (must be 'Active'). It may be Draft, Pending Review, or Closed.`;
-    } else if (new Date(tender.deadline) <= new Date()) {
-        inactiveReason = 'The submission deadline has passed.';
-    }
-
 
     return (
-        <div className="p-8 max-w-6xl mx-auto">
+        <div className="p-8 max-w-5xl mx-auto">
             <DashboardLinkButton /> {/* ADDED BUTTON */}
+            
+            <h1 className="text-3xl font-bold mb-8 text-green-700">My Submitted Proposals</h1>
+            
+            {proposals.length === 0 ? (
+                <p className="text-lg text-gray-500">You have not submitted any proposals yet. <Link to="/vendor/tenders" className='text-green-600 hover:underline'>Find Tenders now.</Link></p>
+            ) : (
+                <div className="space-y-6">
+                    {proposals.map((proposal) => {
+                        const currentStatus = proposal.status?.toLowerCase() || 'submitted';
+                        // Allow withdrawal only if status is submitted (assuming deadline hasn't passed)
+                        const isWithdrawable = currentStatus === 'submitted'; 
+                        
+                        return (
+                            <div key={proposal.proposal_id} className="p-6 border rounded-xl shadow-lg bg-white">
+                                <div className="flex justify-between items-start mb-3 border-b pb-2">
+                                    <h2 className="text-xl font-semibold text-gray-900">
+                                        Proposal for: {proposal.tender_title || `Tender ID: ${proposal.tender_id}`}
+                                    </h2>
+                                    <span 
+                                        className={`px-3 py-1 text-sm rounded-full capitalize ${statusColors[currentStatus] || 'bg-gray-100 text-gray-800'}`}
+                                    >
+                                        {currentStatus}
+                                    </span>
+                                </div>
+                                
+                                {statusMessage[proposal.proposal_id] && (
+                                    <p className={`text-sm mb-2 ${statusMessage[proposal.proposal_id].includes('successfully') ? 'text-green-600' : statusMessage[proposal.proposal_id].includes('Withdrawing') ? 'text-yellow-600' : 'text-red-500'}`}>
+                                        {statusMessage[proposal.proposal_id]}
+                                    </p>
+                                )}
 
-            <div className="flex gap-8">
-                {/* Tender Details Section */}
-                <div className="w-2/3">
-                    <h1 className="text-4xl font-bold mb-4 text-indigo-700">{tender.title}</h1>
-                    <p className="text-lg mb-6 text-gray-600 whitespace-pre-wrap">{tender.description}</p>
-                    
-                    <div className="bg-gray-50 p-6 rounded-lg shadow-inner mb-8 space-y-3">
-                        <h2 className="text-2xl font-semibold mb-3 border-b pb-2">Key Information</h2>
-                        <p><strong>Status:</strong> <span className={`capitalize font-semibold ${isTenderActive ? 'text-green-600' : 'text-gray-500'}`}>{tender.status || 'Draft'}</span></p>
-                        <p><strong>Budget:</strong> {formatCurrency(tender.budget)}</p>
-                        <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleString()}</p>
-                        
-                        {/* Requirement 2: Contact Information displayed for active tenders */}
-                        {isTenderActive && tender.client_contact_email && (
-                            <p className="bg-yellow-100 p-2 rounded mt-4 border border-yellow-300 text-yellow-800">
-                                <strong>Client Contact:</strong> {tender.client_contact_email} (Use this for queries)
-                            </p>
-                        )}
-                        
-                        {/* Attachments Display (Requirement 2) */}
-                        {tender.attachments && tender.attachments.length > 0 ? (
-                            <div>
-                                <p className="font-semibold mt-3">Attachments:</p>
-                                <ul className="list-disc list-inside ml-4 text-sm space-y-1">
-                                    {tender.attachments.map((att, index) => (
-                                        <li key={index}>
-                                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                {att.filename || `Attachment ${index + 1}`}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
+                                <p className="text-gray-700 mb-2">
+                                    <span className="font-medium">Pricing:</span> {proposal.pricing ? `$${parseFloat(proposal.pricing).toLocaleString()}` : 'N/A'}
+                                </p>
+                                <p className="text-sm text-gray-500 italic truncate mb-4">
+                                    Cover Letter snippet: &quot;{proposal.cover_letter?.substring(0, 80)}...&quot;
+                                </p>
+                                
+                                <div className="flex space-x-4 items-center">
+                                    {isWithdrawable && (
+                                        <button
+                                            onClick={() => handleWithdraw(proposal.proposal_id)}
+                                            className="text-sm px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition disabled:opacity-50"
+                                            disabled={statusMessage[proposal.proposal_id]?.includes('Withdrawing')}
+                                        >
+                                            Withdraw Proposal
+                                        </button>
+                                    )}
+                                    
+                                    <Link 
+                                        to={`/vendor/tenders/${proposal.tender_id}`}
+                                        className="text-sm text-indigo-600 hover:underline"
+                                    >
+                                        View Original Tender
+                                    </Link>
+                                </div>
                             </div>
-                        ) : (
-                            <p className="text-sm text-gray-500">No attachments provided by the client.</p>
-                        )}
-                    </div>
+                        );
+                    })}
                 </div>
-
-                {/* Proposal Submission Form Section (Requirement 3) */}
-                <div className="w-1/3 p-6 bg-white border rounded-lg shadow-2xl h-fit sticky top-4">
-                    <h2 className="text-2xl font-bold mb-4 text-green-600">Submit Your Proposal</h2>
-
-                    {!isTenderActive && (
-                        <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-md">
-                            <p className="font-semibold">This tender is closed or not currently accepting proposals.</p>
-                            {inactiveReason && <p className="text-sm mt-1">{inactiveReason}</p>}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleProposalSubmit} className="space-y-4">
-                        
-                        {/* Cover Letter */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Cover Letter/Introduction *</label>
-                            <textarea name="cover_letter" value={proposal.cover_letter} onChange={handleProposalChange} placeholder="A compelling introduction..." required rows="4" className="w-full p-2 border border-gray-300 rounded-md"></textarea>
-                        </div>
-                        
-                        {/* Proposed Solution */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Proposed Solution *</label>
-                            <textarea name="proposed_solution" value={proposal.proposed_solution} onChange={handleProposalChange} placeholder="Outline your solution..." required rows="4" className="w-full p-2 border border-gray-300 rounded-md"></textarea>
-                        </div>
-                        
-                        {/* Pricing */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Pricing (e.g., 150000.00) *</label>
-                            <input type="number" name="pricing" value={proposal.pricing} onChange={handleProposalChange} placeholder="150000.00" required className="w-full p-2 border border-gray-300 rounded-md" />
-                        </div>
-                        
-                        {/* Attachments */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Attachments (Optional)</label>
-                            <input 
-                                type="file" 
-                                name="attachments" 
-                                ref={fileInputRef}
-                                multiple 
-                                onChange={handleFileChange} 
-                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" 
-                            />
-                            {attachments.length > 0 && (
-                                <p className="text-xs text-gray-500 mt-1">{attachments.length} file(s) ready to upload.</p>
-                            )}
-                        </div>
-
-
-                        {submissionStatus && (
-                            <p className={`text-sm p-2 rounded ${submissionStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{submissionStatus}</p>
-                        )}
-                        {error && <p className="text-sm p-2 bg-red-100 text-red-500 rounded-md">{error}</p>}
-
-                        <button 
-                            type="submit" 
-                            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition disabled:opacity-50" 
-                            disabled={submissionStatus.includes('Submitting') || !isTenderActive}
-                        >
-                            Submit Proposal
-                        </button>
-                    </form>
-                </div>
-            </div>
+            )}
         </div>
     );
 }
 
-export default TenderDetails;
+export default MyProposals;
 </file>
 
 <file path="package.json">
@@ -2894,6 +2707,225 @@ function Guidelines() {
 }
 
 export default Guidelines;
+</file>
+
+<file path="src/Pages/vendor/TenderDetails.jsx">
+// src/Pages/Vendor/TenderDetails.jsx
+import  { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { getTenderDetails } from '../../api/tenderApi';
+import { submitProposal } from '../../api/proposalApi';
+import DashboardLinkButton from '../../components/DashboardLinkButton'; // Import the new component
+
+
+function TenderDetails() {
+    const { tenderId } = useParams();
+    const [tender, setTender] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [submissionStatus, setSubmissionStatus] = useState('');
+    
+    // State to hold text inputs
+    const [proposal, setProposal] = useState({
+        cover_letter: '',
+        proposed_solution: '',
+        pricing: '',
+    });
+    // State to hold files
+    const [attachments, setAttachments] = useState([]);
+    const fileInputRef = useRef(null); // Ref to clear the file input
+
+    useEffect(() => {
+        const fetchTender = async () => {
+            try {
+                const data = await getTenderDetails(tenderId);
+                setTender(data);
+            } catch (err) {
+                setError('Failed to load tender details. It might be closed or unauthorized.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchTender();
+    }, [tenderId]);
+
+    const handleProposalChange = (e) => {
+        setProposal(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+    
+    const handleFileChange = (e) => {
+        // e.target.files is a FileList object
+        setAttachments(Array.from(e.target.files));
+    };
+
+    const handleProposalSubmit = async (e) => {
+        e.preventDefault();
+        setSubmissionStatus('Submitting...');
+        setError(null);
+        
+        // 1. Create FormData object (Req 1 fields)
+        const formData = new FormData();
+        formData.append('tender_id', tenderId);
+        formData.append('cover_letter', proposal.cover_letter);
+        formData.append('proposed_solution', proposal.proposed_solution);
+        formData.append('pricing', proposal.pricing); 
+
+        // 2. Append attachments
+        attachments.forEach((file) => {
+            formData.append('attachments', file); // 'attachments' must match backend field name
+        });
+
+        try {
+            await submitProposal(formData); 
+            setSubmissionStatus('Proposal submitted successfully!');
+            
+            // Reset form
+            setProposal({ cover_letter: '', proposed_solution: '', pricing: '' });
+            setAttachments([]);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = ""; // Clear file input
+            }
+
+        } catch (err) {
+            console.error(err);
+            setError(err.message || 'Failed to submit proposal. Please check inputs and file sizes.');
+            setSubmissionStatus('Submission failed.');
+        }
+    };
+    
+    const formatCurrency = (amount) => {
+        if (!amount) return 'N/A';
+        return `$${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+
+    if (loading) return <div className="p-8">Loading Tender...</div>;
+    if (error) return <div className="p-8 text-red-500">{error}</div>;
+    if (!tender) return <div className="p-8 text-red-500">Tender not found.</div>;
+
+    // Check if the tender is still active for submission
+    const isTenderActive = tender.status?.toLowerCase() === 'active' && new Date(tender.deadline) > new Date();
+
+    // Determine the reason if inactive (IMPROVED ERROR CLARITY)
+    let inactiveReason = '';
+    if (tender.status?.toLowerCase() !== 'active') {
+        inactiveReason = `Status is '${tender.status}' (must be 'Active'). It may be Draft, Pending Review, or Closed.`;
+    } else if (new Date(tender.deadline) <= new Date()) {
+        inactiveReason = 'The submission deadline has passed.';
+    }
+
+
+    return (
+        <div className="p-8 max-w-6xl mx-auto">
+            <DashboardLinkButton /> {/* ADDED BUTTON */}
+
+            <div className="flex gap-8">
+                {/* Tender Details Section */}
+                <div className="w-2/3">
+                    <h1 className="text-4xl font-bold mb-4 text-indigo-700">{tender.title}</h1>
+                    <p className="text-lg mb-6 text-gray-600 whitespace-pre-wrap">{tender.description}</p>
+                    
+                    <div className="bg-gray-50 p-6 rounded-lg shadow-inner mb-8 space-y-3">
+                        <h2 className="text-2xl font-semibold mb-3 border-b pb-2">Key Information</h2>
+                        <p><strong>Status:</strong> <span className={`capitalize font-semibold ${isTenderActive ? 'text-green-600' : 'text-gray-500'}`}>{tender.status || 'Draft'}</span></p>
+                        <p><strong>Budget:</strong> {formatCurrency(tender.budget)}</p>
+                        <p><strong>Deadline:</strong> {new Date(tender.deadline).toLocaleString()}</p>
+                        
+                        {/* Requirement 2: Contact Information displayed for active tenders */}
+                        {isTenderActive && tender.client_contact_email && (
+                            <p className="bg-yellow-100 p-2 rounded mt-4 border border-yellow-300 text-yellow-800">
+                                <strong>Client Contact:</strong> {tender.client_contact_email} (Use this for queries)
+                            </p>
+                        )}
+                        
+                        {/* Attachments Display (Requirement 2) */}
+                        {tender.attachments && tender.attachments.length > 0 ? (
+                            <div>
+                                <p className="font-semibold mt-3">Attachments:</p>
+                                <ul className="list-disc list-inside ml-4 text-sm space-y-1">
+                                    {tender.attachments.map((att, index) => (
+                                        <li key={index}>
+                                            <a href={att.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                {att.filename || `Attachment ${index + 1}`}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-500">No attachments provided by the client.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Proposal Submission Form Section (Requirement 3) */}
+                <div className="w-1/3 p-6 bg-white border rounded-lg shadow-2xl h-fit sticky top-4">
+                    <h2 className="text-2xl font-bold mb-4 text-green-600">Submit Your Proposal</h2>
+
+                    {!isTenderActive && (
+                        <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-md">
+                            <p className="font-semibold">This tender is closed or not currently accepting proposals.</p>
+                            {inactiveReason && <p className="text-sm mt-1">{inactiveReason}</p>}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleProposalSubmit} className="space-y-4">
+                        
+                        {/* Cover Letter */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Cover Letter/Introduction *</label>
+                            <textarea name="cover_letter" value={proposal.cover_letter} onChange={handleProposalChange} placeholder="A compelling introduction..." required rows="4" className="w-full p-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                        
+                        {/* Proposed Solution */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Proposed Solution *</label>
+                            <textarea name="proposed_solution" value={proposal.proposed_solution} onChange={handleProposalChange} placeholder="Outline your solution..." required rows="4" className="w-full p-2 border border-gray-300 rounded-md"></textarea>
+                        </div>
+                        
+                        {/* Pricing */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Pricing (e.g., 150000.00) *</label>
+                            <input type="number" name="pricing" value={proposal.pricing} onChange={handleProposalChange} placeholder="150000.00" required className="w-full p-2 border border-gray-300 rounded-md" />
+                        </div>
+                        
+                        {/* Attachments */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">Attachments (Optional)</label>
+                            <input 
+                                type="file" 
+                                name="attachments" 
+                                ref={fileInputRef}
+                                multiple 
+                                onChange={handleFileChange} 
+                                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" 
+                            />
+                            {attachments.length > 0 && (
+                                <p className="text-xs text-gray-500 mt-1">{attachments.length} file(s) ready to upload.</p>
+                            )}
+                        </div>
+
+
+                        {submissionStatus && (
+                            <p className={`text-sm p-2 rounded ${submissionStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{submissionStatus}</p>
+                        )}
+                        {error && <p className="text-sm p-2 bg-red-100 text-red-500 rounded-md">{error}</p>}
+
+                        <button 
+                            type="submit" 
+                            className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition disabled:opacity-50" 
+                            disabled={submissionStatus.includes('Submitting') || !isTenderActive}
+                        >
+                            Submit Proposal
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default TenderDetails;
 </file>
 
 <file path="src/Pages/vendor/TenderList.jsx">
@@ -3443,7 +3475,7 @@ function TenderManager() {
 
     const statusMap = {
         shortlisted: 'bg-blue-100 text-blue-800',
-        awarded: 'bg-green-100 text-green-800',
+        accepted: 'bg-green-100 text-green-800', // CHANGED KEY from 'awarded' to 'accepted'
         rejected: 'bg-red-100 text-red-800',
         submitted: 'bg-gray-100 text-gray-800',
         viewed: 'bg-yellow-100 text-yellow-800', // R10 Tracking
@@ -3540,14 +3572,15 @@ function TenderManager() {
 
     // --- Proposal Management Handlers (R8, R9) ---
 
-    // R8, R9: Shortlist, Reject, Award
+    // Req 5, 6: Shortlist, Reject, Award
     const handleProposalStatusUpdate = async (proposalId, status) => {
         try {
             await updateProposalStatus(proposalId, status);
             alert(`Proposal status set to ${status}.`);
             fetchTenderData(); // Refresh proposals list
         } catch (err) {
-            alert(`Status update failed: ${err.message}`);
+            // Use alert directly as error handling wrapper is minimal here
+            alert(`Status update failed: ${err.message}`); 
         }
     };
 
@@ -3634,10 +3667,10 @@ function TenderManager() {
             )}
 
 
-            {/* --- Proposal View (R7 - R10) --- */}
+            {/* --- Proposal View (Req 4, 5, 6) --- */}
             {canManageProposals && (
                 <div className="mt-8">
-                    <h2 className="text-2xl font-bold mb-4 text-indigo-600">Proposals ({proposals.length}) - Review & Status Tracking (R7, R10)</h2>
+                    <h2 className="text-2xl font-bold mb-4 text-indigo-600">Proposals ({proposals.length}) - Review & Status Tracking (Req 4, 5, 6)</h2>
                     
                     {proposals.length === 0 ? (
                         <p className="text-gray-500">No proposals submitted yet.</p>
@@ -3647,21 +3680,19 @@ function TenderManager() {
                                 <div key={proposal.id} className="p-4 border rounded-lg shadow-sm bg-white">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            {/* R7: Vendor details, using placeholder vendor_name */}
+                                            {/* Req 4: Vendor details */}
                                             <h3 className="text-lg font-medium">
-                                                {/* Assuming the API response includes basic vendor info like vendor_name or company_name */}
                                                 Proposal from: {proposal.vendor_company_name || `Vendor ID: ${proposal.vendor_id}`} 
                                             </h3>
                                             
-                                            {/* R7: Pricing */}
+                                            {/* Req 4: Pricing */}
                                             <p className="text-sm text-gray-700 mt-1">Proposed Pricing: <span className='font-bold'>${proposal.pricing ? parseFloat(proposal.pricing).toLocaleString() : 'N/A'}</span></p>
                                             
-                                            {/* R7: Cover Letter snippet (Part of submitted info) */}
+                                            {/* Req 4: Cover Letter snippet (Part of submitted info) */}
                                             <p className="text-sm text-gray-500 italic mt-2 truncate max-w-xl">
                                                 Cover Letter snippet: &quot;{proposal.cover_letter?.substring(0, 100)}...&quot;
                                             </p>
                                             
-                                            {/* R10: Basic Tracking - Submission Date */}
                                              <p className="text-xs text-gray-400 mt-2">
                                                 Submitted on: {new Date(proposal.createdAt).toLocaleString()} 
                                             </p>
@@ -3673,9 +3704,8 @@ function TenderManager() {
                                     
                                     <div className="mt-4 pt-3 border-t flex space-x-3">
                                         
-                                        {/* Dummy link/button for viewing full proposal documents (R7 attachment view) */}
+                                        {/* Link/button for viewing full proposal documents (Req 4 attachment view) */}
                                         <a 
-                                            // This endpoint must be implemented in the backend to deliver the proposal attachments
                                             href={`/api/proposals/${proposal.id}/download-attachments`} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
@@ -3684,27 +3714,27 @@ function TenderManager() {
                                             View Full Proposal & Docs
                                         </a>
 
-                                        {/* R8, R9 actions */}
+                                        {/* Req 5, 6 actions */}
                                         <button 
                                             onClick={() => handleProposalStatusUpdate(proposal.id, 'shortlisted')}
                                             className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
+                                            disabled={proposal.status.toLowerCase() === 'accepted' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Shortlist (R8)
+                                            Shortlist (Req 5)
                                         </button>
                                         <button 
-                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'awarded')}
+                                            onClick={() => handleProposalStatusUpdate(proposal.id, 'accepted')} // <-- CORRECTED: Changed 'awarded' to 'accepted'
                                             className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
+                                            disabled={proposal.status.toLowerCase() === 'accepted' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Award (R9)
+                                            Award (Req 6 - Accepted)
                                         </button>
                                         <button 
                                             onClick={() => handleProposalStatusUpdate(proposal.id, 'rejected')}
                                             className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
-                                            disabled={proposal.status.toLowerCase() === 'awarded' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
+                                            disabled={proposal.status.toLowerCase() === 'accepted' || proposal.status.toLowerCase() === 'rejected' || proposal.status.toLowerCase() === 'withdrawn'}
                                         >
-                                            Reject (R9)
+                                            Reject (Req 6)
                                         </button>
                                         
                                     </div>
@@ -3727,8 +3757,8 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-// NEW IMPORTS for Notifications and Guidelines
-import { getMyNotifications, markNotificationAsRead } from '../api/notificationApi'; 
+// NEW IMPORTS for Notifications and Guidelines (UPDATED IMPORTS)
+import { getMyNotifications, markNotificationAsRead, getUnreadNotificationCount, markAllNotificationsAsRead } from '../api/notificationApi'; 
 import { getTenderGuidelines } from '../api/contentApi'; 
 
 
@@ -3744,6 +3774,7 @@ function Dashboard() {
 
     // NEW STATE for Notifications and Guidelines
     const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0); // Explicit state for count
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const [notificationsError, setNotificationsError] = useState(null);
     const [guidelinesContent, setGuidelinesContent] = useState(''); 
@@ -3766,17 +3797,34 @@ function Dashboard() {
         const fetchDashboardData = async () => {
             if (!user) return;
             
-            // --- 1. Fetch Notifications (Client & Vendor - Requirement 6) ---
+            // --- 1. Fetch Notifications (Client & Vendor) ---
             setNotificationsLoading(true);
             try {
-                const fetchedNotifications = await getMyNotifications();
-                // Filter for unread or active notifications for display
-                setNotifications(fetchedNotifications.filter(n => !n.read_at)); 
+                // Use Promise.all to fetch list and count concurrently
+                const [fetchedNotifications, countData] = await Promise.all([
+                    getMyNotifications(),
+                    getUnreadNotificationCount(),
+                ]);
+                
+                const unreadNotifs = Array.isArray(fetchedNotifications) 
+                    ? fetchedNotifications.filter(n => !n.read_at)
+                    : [];
+                
+                setNotifications(unreadNotifs); 
+                
+                // Determine the count, prioritizing the dedicated endpoint response
+                // Backend is expected to return { count: N } for getUnreadNotificationCount
+                const resolvedCount = (typeof countData === 'object' && countData !== null && 'count' in countData)
+                    ? countData.count 
+                    : unreadNotifs.length;
+                    
+                setUnreadCount(resolvedCount); 
+                
                 setNotificationsError(null);
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
-                // IMPROVED ERROR MESSAGE based on log
-                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my)');
+                // Keep the robust error message for debugging the backend
+                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my and /api/notifications/unread-count)');
             } finally {
                 setNotificationsLoading(false);
             }
@@ -3796,7 +3844,6 @@ function Dashboard() {
                     setGuidelinesContent(contentExists ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
                 } catch (err) {
                     console.error("Failed to fetch guidelines snippet:", err);
-                    // IMPROVED ERROR MESSAGE based on log
                     setGuidelinesContent('Failed to load guidelines status. (Check API endpoint /api/content/guidelines)');
                 }
             } else {
@@ -3839,14 +3886,29 @@ function Dashboard() {
         setIsEditing(!isEditing);
     };
 
-    // Handle marking notification as read
+    // Handle marking specific notification as read (Requirement 1)
     const handleMarkAsRead = async (notificationId) => {
         try {
             await markNotificationAsRead(notificationId);
             setNotifications(prev => prev.filter(n => n.id !== notificationId)); // Remove from unread list
+            setUnreadCount(prev => Math.max(0, prev - 1)); // Decrement count
         } catch (err) {
             console.error("Failed to mark notification as read:", err);
             // Optionally show an error message
+        }
+    };
+    
+    // Handle marking ALL notifications as read (Requirement 1)
+    const handleMarkAllAsRead = async () => {
+        if (!window.confirm("Mark all unread notifications as read?")) return;
+        try {
+            await markAllNotificationsAsRead();
+            setNotifications([]); // Clear the display list
+            setUnreadCount(0);
+            setStatusMessage({ message: 'All notifications marked as read.', type: 'success' });
+        } catch (err) {
+            console.error("Failed to mark all as read:", err);
+            setStatusMessage({ message: 'Failed to mark all notifications as read.', type: 'error' });
         }
     };
 
@@ -3945,7 +4007,7 @@ function Dashboard() {
             {/* Dynamic Notifications Section (For Client and VENDOR) */}
             {(isClient || isVendor) && (
                 <div className="mb-10 p-6 bg-blue-50 rounded-lg shadow-inner border-l-4 border-blue-400">
-                    <h2 className="text-2xl font-semibold mb-4 text-blue-700">Your Notifications ({notifications.length} Unread)</h2>
+                    <h2 className="text-2xl font-semibold mb-4 text-blue-700">Your Notifications ({unreadCount} Unread)</h2>
                     {notificationsLoading ? (
                         <p className="text-blue-600">Loading notifications...</p>
                     ) : notificationsError ? (
@@ -3975,12 +4037,21 @@ function Dashboard() {
                             ))}
                         </div>
                     )}
-                    {/* Link to a dedicated notifications page if created (optional) */}
-                    {notifications.length > 0 && (
-                        <p className="text-sm text-gray-600 mt-4">
-                            {/* Note: Assuming /notifications endpoint is the same for both, or linking back to Dashboard for now */}
-                            <span className="text-blue-600">View your inbox (check backend /api/notifications)</span>
-                        </p>
+                    {/* Link and Mark All as Read button */}
+                    {(notifications.length > 0 || unreadCount > 0) && (
+                        <div className="mt-4 flex justify-between items-center">
+                            <p className="text-sm text-gray-600">
+                                You have {unreadCount} unread items.
+                            </p>
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                >
+                                    Mark All as Read
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             )}

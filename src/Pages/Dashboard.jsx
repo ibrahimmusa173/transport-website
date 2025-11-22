@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-// NEW IMPORTS for Notifications and Guidelines
-import { getMyNotifications, markNotificationAsRead } from '../api/notificationApi'; 
+// NEW IMPORTS for Notifications and Guidelines (UPDATED IMPORTS)
+import { getMyNotifications, markNotificationAsRead, getUnreadNotificationCount, markAllNotificationsAsRead } from '../api/notificationApi'; 
 import { getTenderGuidelines } from '../api/contentApi'; 
 
 
@@ -21,6 +21,7 @@ function Dashboard() {
 
     // NEW STATE for Notifications and Guidelines
     const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0); // Explicit state for count
     const [notificationsLoading, setNotificationsLoading] = useState(true);
     const [notificationsError, setNotificationsError] = useState(null);
     const [guidelinesContent, setGuidelinesContent] = useState(''); 
@@ -43,17 +44,34 @@ function Dashboard() {
         const fetchDashboardData = async () => {
             if (!user) return;
             
-            // --- 1. Fetch Notifications (Client & Vendor - Requirement 6) ---
+            // --- 1. Fetch Notifications (Client & Vendor) ---
             setNotificationsLoading(true);
             try {
-                const fetchedNotifications = await getMyNotifications();
-                // Filter for unread or active notifications for display
-                setNotifications(fetchedNotifications.filter(n => !n.read_at)); 
+                // Use Promise.all to fetch list and count concurrently
+                const [fetchedNotifications, countData] = await Promise.all([
+                    getMyNotifications(),
+                    getUnreadNotificationCount(),
+                ]);
+                
+                const unreadNotifs = Array.isArray(fetchedNotifications) 
+                    ? fetchedNotifications.filter(n => !n.read_at)
+                    : [];
+                
+                setNotifications(unreadNotifs); 
+                
+                // Determine the count, prioritizing the dedicated endpoint response
+                // Backend is expected to return { count: N } for getUnreadNotificationCount
+                const resolvedCount = (typeof countData === 'object' && countData !== null && 'count' in countData)
+                    ? countData.count 
+                    : unreadNotifs.length;
+                    
+                setUnreadCount(resolvedCount); 
+                
                 setNotificationsError(null);
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
-                // IMPROVED ERROR MESSAGE based on log
-                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my)');
+                // Keep the robust error message for debugging the backend
+                setNotificationsError('Failed to load notifications. (Check API endpoint /api/notifications/my and /api/notifications/unread-count)');
             } finally {
                 setNotificationsLoading(false);
             }
@@ -73,7 +91,6 @@ function Dashboard() {
                     setGuidelinesContent(contentExists ? 'Tender guidelines are available. Click "View Tender Guidelines" above to read the full document.' : 'No guidelines snippet available.');
                 } catch (err) {
                     console.error("Failed to fetch guidelines snippet:", err);
-                    // IMPROVED ERROR MESSAGE based on log
                     setGuidelinesContent('Failed to load guidelines status. (Check API endpoint /api/content/guidelines)');
                 }
             } else {
@@ -116,14 +133,29 @@ function Dashboard() {
         setIsEditing(!isEditing);
     };
 
-    // Handle marking notification as read
+    // Handle marking specific notification as read (Requirement 1)
     const handleMarkAsRead = async (notificationId) => {
         try {
             await markNotificationAsRead(notificationId);
             setNotifications(prev => prev.filter(n => n.id !== notificationId)); // Remove from unread list
+            setUnreadCount(prev => Math.max(0, prev - 1)); // Decrement count
         } catch (err) {
             console.error("Failed to mark notification as read:", err);
             // Optionally show an error message
+        }
+    };
+    
+    // Handle marking ALL notifications as read (Requirement 1)
+    const handleMarkAllAsRead = async () => {
+        if (!window.confirm("Mark all unread notifications as read?")) return;
+        try {
+            await markAllNotificationsAsRead();
+            setNotifications([]); // Clear the display list
+            setUnreadCount(0);
+            setStatusMessage({ message: 'All notifications marked as read.', type: 'success' });
+        } catch (err) {
+            console.error("Failed to mark all as read:", err);
+            setStatusMessage({ message: 'Failed to mark all notifications as read.', type: 'error' });
         }
     };
 
@@ -222,7 +254,7 @@ function Dashboard() {
             {/* Dynamic Notifications Section (For Client and VENDOR) */}
             {(isClient || isVendor) && (
                 <div className="mb-10 p-6 bg-blue-50 rounded-lg shadow-inner border-l-4 border-blue-400">
-                    <h2 className="text-2xl font-semibold mb-4 text-blue-700">Your Notifications ({notifications.length} Unread)</h2>
+                    <h2 className="text-2xl font-semibold mb-4 text-blue-700">Your Notifications ({unreadCount} Unread)</h2>
                     {notificationsLoading ? (
                         <p className="text-blue-600">Loading notifications...</p>
                     ) : notificationsError ? (
@@ -252,12 +284,21 @@ function Dashboard() {
                             ))}
                         </div>
                     )}
-                    {/* Link to a dedicated notifications page if created (optional) */}
-                    {notifications.length > 0 && (
-                        <p className="text-sm text-gray-600 mt-4">
-                            {/* Note: Assuming /notifications endpoint is the same for both, or linking back to Dashboard for now */}
-                            <span className="text-blue-600">View your inbox (check backend /api/notifications)</span>
-                        </p>
+                    {/* Link and Mark All as Read button */}
+                    {(notifications.length > 0 || unreadCount > 0) && (
+                        <div className="mt-4 flex justify-between items-center">
+                            <p className="text-sm text-gray-600">
+                                You have {unreadCount} unread items.
+                            </p>
+                            {unreadCount > 0 && (
+                                <button
+                                    onClick={handleMarkAllAsRead}
+                                    className="text-sm px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                >
+                                    Mark All as Read
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             )}
