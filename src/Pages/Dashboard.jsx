@@ -1,11 +1,14 @@
-
 // src/Pages/Dashboard.jsx
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 // NEW IMPORTS for Notifications and Guidelines
-import { getMyNotifications, markNotificationAsRead } from '../api/notificationApi'; 
+import { 
+    getMyNotifications, 
+    markNotificationAsRead, 
+    markAllNotificationsAsRead // <-- NEW IMPORT
+} from '../api/notificationApi'; 
 import { getTenderGuidelines } from '../api/contentApi'; 
 
 
@@ -116,9 +119,28 @@ function Dashboard() {
         setIsEditing(!isEditing);
     };
 
-    // Handle marking notification as read
+    // Handler to mark ALL notifications as read (Req 1d)
+    const handleMarkAllAsRead = async () => {
+        if (!window.confirm("Mark all unread notifications as read?")) return;
+
+        setNotificationsLoading(true); 
+        try {
+            await markAllNotificationsAsRead();
+            // Clear all notifications from the unread list in state
+            setNotifications([]); 
+            setNotificationsError(null);
+        } catch (err) {
+            console.error("Failed to mark all notifications as read:", err);
+            setNotificationsError('Failed to mark all as read.');
+        } finally {
+            setNotificationsLoading(false);
+        }
+    };
+
+    // Handle marking specific notification as read (Req 1c)
     const handleMarkAsRead = async (notificationId) => {
         try {
+            // Uses the updated markNotificationAsRead function with the new API route
             await markNotificationAsRead(notificationId);
             setNotifications(prev => prev.filter(n => n.id !== notificationId)); // Remove from unread list
         } catch (err) {
@@ -222,7 +244,20 @@ function Dashboard() {
             {/* Dynamic Notifications Section (For Client and VENDOR) */}
             {(isClient || isVendor) && (
                 <div className="mb-10 p-6 bg-blue-50 rounded-lg shadow-inner border-l-4 border-blue-400">
-                    <h2 className="text-2xl font-semibold mb-4 text-blue-700">Your Notifications ({notifications.length} Unread)</h2>
+                    
+                    {/* NEW FLEX CONTAINER FOR TITLE AND MARK ALL BUTTON */}
+                    <div className="flex justify-between items-center mb-4">
+                         <h2 className="text-2xl font-semibold text-blue-700">Your Notifications ({notifications.length} Unread)</h2>
+                         {notifications.length > 0 && (
+                            <button
+                                onClick={handleMarkAllAsRead}
+                                className="text-sm px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                                disabled={notificationsLoading}
+                            >
+                                Mark All as Read
+                            </button>
+                        )}
+                    </div>
                     {notificationsLoading ? (
                         <p className="text-blue-600">Loading notifications...</p>
                     ) : notificationsError ? (
