@@ -1,4 +1,3 @@
-
 // src/api/apiClient.js
 const BASE_URL = "http://localhost:7000/api";
 
@@ -35,15 +34,7 @@ async function authenticatedFetch(endpoint, options = {}) {
     });
 
     if (!response.ok) {
-        // Check if the response body is available and parseable, otherwise return a default error.
-        const contentType = response.headers.get("content-type");
-        let errorData = { message: `HTTP error! status: ${response.status}` };
-        
-        if (contentType && contentType.includes("application/json")) {
-            // Attempt to parse JSON response for detailed error message
-            errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
-        }
-        
+        const errorData = await response.json().catch(() => ({ message: `HTTP error! status: ${response.status}` }));
         throw new Error(errorData.message || `API Error (${response.status})`);
     }
 
