@@ -1,7 +1,8 @@
+// src/Pages/Admin/AnalyticsDashboard.jsx
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types'; 
 import { getAdminDashboardAnalytics, getUserReport, getTenderReport } from '../../api/analyticsApi';
-import DashboardLinkButton from '../../components/DashboardLinkButton'; // <-- ADDED
+import DashboardLinkButton from '../../components/DashboardLinkButton'; 
 
 function AnalyticsDashboard() {
     const [dashboardData, setDashboardData] = useState({});
@@ -15,8 +16,9 @@ function AnalyticsDashboard() {
             setLoading(true);
             try {
                 // Req 14a
-                const dashboard = await getAdminDashboardAnalytics();
-                setDashboardData(dashboard);
+                const dashboardResponse = await getAdminDashboardAnalytics();
+                // Extract the 'data' object from the response
+                setDashboardData(dashboardResponse.data || {}); 
                 
                 // Req 14b
                 const userRep = await getUserReport();
@@ -29,8 +31,7 @@ function AnalyticsDashboard() {
                 setError(null);
             } catch (err) {
                 console.error("Failed to fetch analytics:", err);
-                // The API call failed. The error message is correct but confirms a backend issue.
-                setError('Failed to load analytics data. Ensure backend endpoints are running and returning valid JSON.');
+                setError(`Failed to load analytics data: ${err.message}. Ensure backend endpoints are running and returning valid JSON.`);
             } finally {
                 setLoading(false);
             }
@@ -46,33 +47,64 @@ function AnalyticsDashboard() {
 
     return (
         <div className="p-8">
-            <DashboardLinkButton /> {/* <-- ADDED */}
+            <DashboardLinkButton />
             <h1 className="text-3xl font-bold mb-6 text-red-700">Admin: Platform Analytics & Reports (Req 14)</h1>
             <p className="mb-8 text-gray-600">Overview of key platform metrics.</p>
 
-            {/* Dashboard Metrics (Req 14a) */}
+            {/* Dashboard Metrics (Req 14a) - Mapped to ACTUAL Postman keys */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <MetricCard title="Total Registered Users" value={formatNumber(dashboardData.totalUsers)} icon="👤" colorKey="blue" />
-                <MetricCard title="Active Tenders" value={formatNumber(dashboardData.activeTenders)} icon="📄" colorKey="purple" />
-                <MetricCard title="Total Proposals Submitted" value={formatNumber(dashboardData.totalProposals)} icon="📨" colorKey="green" />
-                <MetricCard title="Clients" value={formatNumber(dashboardData.clientCount)} icon="💼" colorKey="indigo" />
-                <MetricCard title="Vendors" value={formatNumber(dashboardData.vendorCount)} icon="🛠️" colorKey="teal" />
-                <MetricCard title="Tenders Created Last 30 Days" value={formatNumber(dashboardData.tendersLast30Days)} icon="🗓️" colorKey="orange" />
+                <MetricCard 
+                    // Changed key and title from 'total_active_users' to 'total_registered_users'
+                    title="Total Registered Users" 
+                    value={formatNumber(dashboardData.total_registered_users)} 
+                    icon="👤" 
+                    colorKey="blue" 
+                />
+                <MetricCard 
+                    // Changed key and title from 'active_clients' to 'total_clients'
+                    title="Total Clients" 
+                    value={formatNumber(dashboardData.total_clients)} 
+                    icon="💼" 
+                    colorKey="indigo" 
+                />
+                <MetricCard 
+                    // Changed key and title from 'active_vendors' to 'total_vendors'
+                    title="Total Vendors" 
+                    value={formatNumber(dashboardData.total_vendors)} 
+                    icon="🛠️" 
+                    colorKey="teal" 
+                />
+                <MetricCard 
+                    title="Total Tenders Posted" 
+                    value={formatNumber(dashboardData.total_tenders_posted)} 
+                    icon="🗓️" 
+                    colorKey="orange" 
+                />
+                <MetricCard 
+                    title="Active Tenders" 
+                    value={formatNumber(dashboardData.tenders_currently_active)} 
+                    icon="📄" 
+                    colorKey="purple" 
+                />
+                <MetricCard 
+                    title="Total Proposals Submitted" 
+                    value={formatNumber(dashboardData.total_proposals_submitted)} 
+                    icon="📨" 
+                    colorKey="green" 
+                />
             </div>
 
             {/* User Report (Req 14b) */}
             {userReport && (
-                <ReportSection title="User Activity Report (Req 14b)" colorKey="indigo">
-                    <p>New registrations last week: <span className="font-semibold">{formatNumber(userReport.newUsersLastWeek)}</span></p>
-                    <p>Total Deactivated Accounts: <span className="font-semibold">{formatNumber(userReport.deactivatedUsers)}</span></p>
+                <ReportSection title="User Activity Report (Req 14b - Stub)" colorKey="indigo">
+                    <p className='italic text-gray-500'>{userReport.message || 'Detailed report data pending implementation in backend.'}</p>
                 </ReportSection>
             )}
 
             {/* Tender Report (Req 14c) */}
             {tenderReport && (
-                <ReportSection title="Tender Performance Report (Req 14c)" colorKey="green">
-                    <p>Tenders awaiting moderation: <span className="font-semibold">{formatNumber(tenderReport.awaitingModeration)}</span></p>
-                    <p>Average proposals per tender: <span className="font-semibold">{tenderReport.avgProposalsPerTender?.toFixed(1) || 'N/A'}</span></p>
+                <ReportSection title="Tender Performance Report (Req 14c - Stub)" colorKey="green">
+                    <p className='italic text-gray-500'>{tenderReport.message || 'Detailed report data pending implementation in backend.'}</p>
                 </ReportSection>
             )}
         </div>
