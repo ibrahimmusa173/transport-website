@@ -1,4 +1,4 @@
-
+// src/Pages/Admin/ContentManagement.jsx
 import { useEffect, useState } from 'react';
 import { getAllGuidelinesAdmin, createGuideline, updateGuideline, deleteGuideline } from '../../api/contentApi'; 
 import DashboardLinkButton from '../../components/DashboardLinkButton'; 
@@ -10,18 +10,19 @@ function ContentManagement() {
     const [currentGuideline, setCurrentGuideline] = useState(null);
     const [formContent, setFormContent] = useState('');
     const [formTitle, setFormTitle] = useState('');
+    const [formStatus, setFormStatus] = useState('draft'); // <-- State for status
     const [statusMessage, setStatusMessage] = useState({ message: '', type: '' });
 
     const fetchGuidelines = async () => {
         setLoading(true);
         try {
-            // Use the dedicated admin listing API (Req 7, 8, 9 management)
+            // Step 2B: List All Guidelines (Admin View)
             const data = await getAllGuidelinesAdmin(); 
             const guidelinesArray = Array.isArray(data) ? data : (data ? [data] : []);
             setGuidelines(guidelinesArray);
         } catch (error) {
             console.error("Failed to fetch guidelines:", error);
-            setStatusMessage({ message: 'Failed to load guidelines.', type: 'error' });
+            setStatusMessage({ message: 'Failed to load guidelines. Check API logs.', type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -35,6 +36,7 @@ function ContentManagement() {
         setCurrentGuideline(guideline);
         setFormTitle(guideline.title || '');
         setFormContent(guideline.content || '');
+        setFormStatus(guideline.status || 'draft'); 
         setIsEditing(true);
         setStatusMessage({ message: '', type: '' });
     };
@@ -43,26 +45,34 @@ function ContentManagement() {
         setCurrentGuideline(null);
         setFormTitle('');
         setFormContent('');
+        setFormStatus('draft'); 
         setIsEditing(true);
         setStatusMessage({ message: '', type: '' });
     };
 
     const handleSave = async (e) => {
         e.preventDefault();
-        const guidelineData = { title: formTitle, content: formContent, type: 'tender' }; 
+        const guidelineData = { 
+            title: formTitle, 
+            content: formContent, 
+            type: 'tender_request', 
+            status: formStatus 
+        }; 
         
         setStatusMessage({ message: 'Saving guideline...', type: 'info' });
 
         try {
             if (currentGuideline?._id) {
-                await updateGuideline(currentGuideline._id, guidelineData); // Req 8
+                // Step 2C: Update Guideline (Publish)
+                await updateGuideline(currentGuideline._id, guidelineData); 
                 setStatusMessage({ message: 'Guideline updated successfully!', type: 'success' });
             } else {
-                await createGuideline(guidelineData); // Req 7
+                // Step 2A: Create Guideline (Draft)
+                await createGuideline(guidelineData); 
                 setStatusMessage({ message: 'Guideline created successfully!', type: 'success' });
             }
             setIsEditing(false);
-            await fetchGuidelines(); // Refresh list
+            await fetchGuidelines(); 
         } catch (error) {
             console.error("Save failed:", error);
             setStatusMessage({ message: error.message || 'Failed to save guideline.', type: 'error' });
@@ -73,9 +83,9 @@ function ContentManagement() {
         if (!window.confirm("Are you sure you want to delete this guideline?")) return;
         setStatusMessage({ message: 'Deleting guideline...', type: 'info' });
         try {
-            await deleteGuideline(guidelineId); // Req 9
+            await deleteGuideline(guidelineId); // Step 2D: Delete Guideline
             setStatusMessage({ message: 'Guideline deleted successfully.', type: 'success' });
-            await fetchGuidelines(); // Refresh list
+            await fetchGuidelines(); 
         } catch (error) {
              console.error("Delete failed:", error);
             setStatusMessage({ message: error.message || 'Failed to delete guideline.', type: 'error' });
@@ -86,7 +96,7 @@ function ContentManagement() {
 
     return (
         <div className="p-8">
-            <DashboardLinkButton /> {/* <-- ADDED */}
+            <DashboardLinkButton /> 
             <h1 className="text-3xl font-bold mb-6 text-orange-700">Admin: Content Management (Tender Guidelines)</h1>
             
             {statusMessage.message && (
@@ -121,6 +131,20 @@ function ContentManagement() {
                                 required
                             ></textarea>
                         </div>
+                        
+                        <div>
+                            <label htmlFor="status" className="block text-sm font-medium text-gray-700">Publication Status</label>
+                            <select
+                                id="status"
+                                value={formStatus}
+                                onChange={(e) => setFormStatus(e.target.value)}
+                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            >
+                                <option value="draft">Draft (Private)</option>
+                                <option value="published">Published (Visible to Clients)</option>
+                            </select>
+                        </div>
+                        
                         <div className="flex space-x-4">
                             <button
                                 type="submit"
@@ -156,20 +180,24 @@ function ContentManagement() {
                                 <div key={g._id || g.id} className="p-4 border rounded-lg bg-white shadow-sm flex justify-between items-center">
                                     <div>
                                         <p className="text-lg font-medium">{g.title || 'Untitled Guideline'}</p>
-                                        <p className="text-sm text-gray-500">Last updated: {new Date(g.updatedAt || g.createdAt).toLocaleDateString()}</p>
+                                        <p className="text-sm text-gray-500">
+                                            Status: <span className={g.status === 'published' ? 'text-green-600 font-bold' : 'text-orange-600'}>
+                                                {g.status || 'draft'}
+                                            </span> | Last updated: {new Date(g.updatedAt || g.createdAt).toLocaleDateString()}
+                                        </p>
                                     </div>
                                     <div className="space-x-2">
                                         <button 
                                             onClick={() => handleEdit(g)}
                                             className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
                                         >
-                                            Edit (Req 8)
+                                            Edit (Req 8 / Step 2C)
                                         </button>
                                         <button 
                                             onClick={() => handleDelete(g._id || g.id)}
                                             className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
                                         >
-                                            Delete (Req 9)
+                                            Delete (Req 9 / Step 2D)
                                         </button>
                                     </div>
                                 </div>

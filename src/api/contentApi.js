@@ -1,17 +1,16 @@
-
 // src/api/contentApi.js
 import authenticatedFetch from './apiClient';
 
 /**
- * Fetches tender guidelines (Client Read).
- * This route should ideally be accessible to clients (non-admins) for reading.
- * Assumes a backend endpoint like GET /api/content/guidelines exists.
+ * Fetches tender guidelines (Client Read - Step 3A).
+ * API: GET /api/guidelines (Based on Step 3 Requirement)
+ * NOTE: The backend must ensure this endpoint only returns published content.
  */
 export const getTenderGuidelines = async () => {
-    return authenticatedFetch('/content/guidelines');
+    return authenticatedFetch('/guidelines');
 };
 
-// NEW: Admin function to get all guidelines (Req 7-9 need a list/collection access)
+// NEW: Admin function to get all guidelines (Req 7-9 management needs a list/collection access, Step 2B)
 // API: GET /api/admin/content/guidelines
 export const getAllGuidelinesAdmin = async () => {
     return authenticatedFetch('/admin/content/guidelines');
@@ -21,7 +20,7 @@ export const getAllGuidelinesAdmin = async () => {
 // --- ADMIN Guidelines Management Functions (NEW) ---
 // ===================================
 
-// 7. Admins to create guidelines
+// 7. Admins to create guidelines (Step 2A)
 // API: POST /api/admin/content/guidelines
 export const createGuideline = async (guidelineData) => {
     return authenticatedFetch('/admin/content/guidelines', {
@@ -30,7 +29,7 @@ export const createGuideline = async (guidelineData) => {
     });
 };
 
-// 8. Admins to Edit guidelines
+// 8. Admins to Edit guidelines (Step 2C)
 // API: PUT /api/admin/content/guidelines/:id
 export const updateGuideline = async (guidelineId, guidelineData) => {
     return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
@@ -39,7 +38,7 @@ export const updateGuideline = async (guidelineId, guidelineData) => {
     });
 };
 
-// 9. Admins to Delete guidelines
+// 9. Admins to Delete guidelines (Step 2D)
 // API: DELETE /api/admin/content/guidelines/:id
 export const deleteGuideline = async (guidelineId) => {
     return authenticatedFetch(`/admin/content/guidelines/${guidelineId}`, {
