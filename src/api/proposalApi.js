@@ -51,9 +51,6 @@ export const updateProposalStatus = (proposalId, status) => {
 };
 
 
-// ===================================
-// --- ADMIN Proposal Management Functions ---
-// ===================================
 
 // 8) The system shall allow Admins to view all proposals submitted on the platform.
 // API: GET /api/proposals/admin/all

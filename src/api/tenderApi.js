@@ -27,9 +27,6 @@ export const getTenderDetails = (tenderId) => {
 };
 
 
-// =======================================================
-// CLIENT API ENDPOINTS (Existing)
-// =======================================================
 
 // 1a) Create Tender (Draft/Save)
 export const createTender = (tenderData) => {
